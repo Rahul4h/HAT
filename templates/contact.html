@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Help & Contact{% endblock title %}
+{% block body %}
+
+<style>
+    .faq-card {
+        border: none;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 15px;
+        transition: 0.3s;
+    }
+
+    .faq-card:hover {
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .faq-header {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 10px 15px;
+    }
+
+    .faq-answer {
+        padding: 10px 15px;
+        font-size: 14px;
+        display: none;
+    }
+
+    .complain-box {
+        background-color: #f8f8f8;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.05);
+    }
+
+    .complain-box h3 {
+        background: linear-gradient(to right, #343a40, #495057);
+        color: white;
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+    }
+
+    .btn-dark {
+        border-radius: 6px;
+        transition: 0.3s;
+    }
+
+    .btn-dark:hover {
+        background-color: #212529;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row gy-4">
+
+        <!-- 🔽 FAQ Section -->
+        <div class="col-md-4">
+            <h4 class="mb-3 text-primary fw-bold">📖 Quick Help</h4>
+            <div class="accordion" id="faqAccordion">
+                <div class="faq-card">
+                    <div class="faq-header" onclick="toggleFaq(1)">➤ How can I see my order?</div>
+                    <div class="faq-answer" id="faq-answer-1">To see your order, go to 'Orders'. You can see real-time updates there.</div>
+                </div>
+                <div class="faq-card">
+                    <div class="faq-header" onclick="toggleFaq(2)">➤ How do I cancel my order?</div>
+                    <div class="faq-answer" id="faq-answer-2">You can cancel your order from the 'Orders' page.</div>
+                </div>
+                <div class="faq-card">
+                    <div class="faq-header" onclick="toggleFaq(3)">➤ How can I return a product?</div>
+                    <div class="faq-answer" id="faq-answer-3">Returns can be initiated from 'Orders' after the product is delivered. Make sure it's unused.</div>
+                </div>
+                <div class="faq-card">
+                    <div class="faq-header" onclick="toggleFaq(4)">➤ What payment methods do you accept?</div>
+                    <div class="faq-answer" id="faq-answer-4">We accept bKash, Nagad, Rocket, credit/debit cards, and cash on delivery.</div>
+                </div>
+                <div class="faq-card">
+                    <div class="faq-header" onclick="toggleFaq(5)">➤ When to use Complain Box?</div>
+                    <div class="faq-answer" id="faq-answer-5">Use this if you didn’t receive proper help, faced rude behavior, or were cheated by delivery staff.</div>
+                </div>
+                <div class="faq-card">
+                    <div class="faq-header" onclick="toggleFaq(6)">➤ What to do when I need help?</div>
+                    <div class="faq-answer" id="faq-answer-6">Click on HELP & CONTACT > Chat icon at bottom-right to contact Customer Care.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔽 Complain Box -->
+        <div class="col-md-4">
+            <div class="complain-box">
+                <h3>Complain Box</h3>
+                <form action="/contact" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="name" placeholder="Your Name" class="form-control mb-3" required>
+                    <input type="email" name="email" placeholder="Your Email" class="form-control mb-3" required>
+                    <input type="tel" name="phone" placeholder="Mobile Number" class="form-control mb-3" required>
+                    <label class="mb-2">What went wrong?</label>
+                    <textarea name="desc" class="form-control mb-3" rows="4" required></textarea>
+                    <button class="btn btn-dark w-100" type="submit">Submit Complain</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 🔽 Right Side Banner/Image -->
+        <div class="col-md-4 d-none d-md-block">
+            <img src="{% static 'images/help-center.png' %}" alt="Help" class="img-fluid rounded shadow-sm">
+        </div>
+    </div>
+</div>
+
+<!-- 🔽 Floating Chatbot Button -->
+<div id="chatbot-toggle" onclick="toggleChatbot()" style="position: fixed; bottom: 20px; right: 20px; background-color: #343a40; color: white; border-radius: 50%; width: 60px; height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; z-index: 9999; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+    <div style="font-size: 24px;">💬</div>
+    <small style="font-size: 10px;">Chat</small>
+</div>
+
+<!-- 🔽 Chatbot -->
+<div id="chatbot-container" style="position: fixed; bottom: 90px; right: 20px; width: 320px; max-height: 500px; background: white; border: 1px solid #ccc; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,0.2); display: none; flex-direction: column; z-index: 9999;">
+    <div style="background-color: #343a40; color: white; padding: 10px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+        <strong>Customer Care Chat</strong>
+        <span style="float: right; cursor: pointer;" onclick="toggleChatbot()">✖</span>
+    </div>
+
+    <div id="chat-messages" style="flex: 1; padding: 10px; overflow-y: auto; font-size: 14px; max-height: 320px;">
+        {% for msg in chat_messages %}
+            {% if msg.sender == request.user %}
+                <div class="text-end mb-2">
+                    <span class="badge bg-primary px-2 py-1">{{ msg.message }}</span><br>
+                    <small class="text-muted">{{ msg.timestamp|date:"H:i" }}</small>
+                </div>
+            {% else %}
+                <div class="text-start mb-2">
+                    <span class="badge bg-success px-2 py-1">{{ msg.message }}</span><br>
+                    <small class="text-muted">{{ msg.timestamp|date:"H:i" }}</small>
+                </div>
+            {% endif %}
+        {% empty %}
+            <p class="text-muted text-center">No messages yet.</p>
+        {% endfor %}
+    </div>
+
+    <form method="post" action="{% url 'contact' %}" style="padding: 10px; border-top: 1px solid #ccc;">
+        {% csrf_token %}
+        <div class="input-group">
+            <input type="text" name="message" placeholder="Type your message..." class="form-control" required autocomplete="off">
+            <button class="btn btn-dark" type="submit">Send</button>
+        </div>
+    </form>
+</div>
+
+<!-- 🔽 JS Script -->
+<script>
+    function toggleFaq(id) {
+        const el = document.getElementById('faq-answer-' + id);
+        el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function toggleChatbot() {
+        const chat = document.getElementById('chatbot-container');
+        const messages = document.getElementById('chat-messages');
+        if (chat.style.display === 'none' || chat.style.display === '') {
+            chat.style.display = 'flex';
+            localStorage.setItem('chatbotOpen', 'true');
+            setTimeout(() => { messages.scrollTop = messages.scrollHeight; }, 100);
+        } else {
+            chat.style.display = 'none';
+            localStorage.setItem('chatbotOpen', 'false');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const chat = document.getElementById('chatbot-container');
+        const messages = document.getElementById('chat-messages');
+        if (localStorage.getItem('chatbotOpen') === 'true') {
+            chat.style.display = 'flex';
+            messages.scrollTop = messages.scrollHeight;
+        }
+    });
+</script>
+
+{% endblock body %}

@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Home{% endblock title %}
+
+
+{% block body %}
+<style>
+    .product-card {
+        border: 1px solid #eee;
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+        transition: box-shadow 0.3s;
+        background-color: #fff;
+        height: 100%;
+        position: relative;
+    }
+    .product-card:hover {
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .product-image {
+        height: 150px;
+        width: 100%;
+        object-fit: contain;
+    }
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: red;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+    }
+    .countdown {
+        font-size: 0.85rem;
+        color: #777;
+    }
+</style>
+
+<div class="container my-5">
+    <h3 class="mb-4">Flash Sale <span class="countdown" id="countdown"></span></h3>
+ <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4">
+    {% for product in products %}
+    <div class="col d-flex">
+        <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark w-100">
+            <div class="product-card flex-fill">
+                {% if product.original_price > product.sale_price %}
+                <div class="discount-badge">
+                    -{{ product.discount_percentage }}%
+                </div>
+                {% endif %}
+                <img src="{{ product.image.url }}" class="product-image mb-2" alt="{{ product.title }}">
+                <h6>{{ product.title }}</h6>
+                <p class="text-danger mb-1">৳{{ product.sale_price }} 
+                    <del class="text-muted">৳{{ product.original_price }}</del>
+                </p>
+                <button class="btn btn-sm btn-outline-primary mt-2">Buy Now</button>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+  </div>
+  
+</div>
+
+<script>
+    // Simple Flash Sale Countdown (e.g. ends in 2 hours)
+    const endTime = new Date();
+    endTime.setHours(endTime.getHours() + 2);
+
+    function updateCountdown() {
+        const now = new Date();
+        const distance = endTime - now;
+
+        if (distance > 0) {
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown").innerText =
+                `(Ends in ${hours}h ${minutes}m ${seconds}s)`;
+        } else {
+            document.getElementById("countdown").innerText = "(Flash Sale Ended)";
+        }
+    }
+
+    setInterval(updateCountdown, 1000);
+</script>
+<footer style="background-color: #f2f2f2; padding: 40px 0; font-family: Arial, sans-serif;">
+    <div style="max-width: 1200px; margin: auto; display: flex; justify-content: space-between; flex-wrap: wrap;">
+        <!-- Customer Care -->
+        <div>
+            
+            <ul style="list-style: none; padding: 0;">
+                <li><a href="/contact">Contact us</a></li>
+                <li><a href="{% url 'cart' %}">🛒 Cart</a></li>
+                <li><a href="/about">About HAT</a></li>
+                <li><a href="/blog">Blog</a></li>
+                <li><a href="/">Shop</a></li>
+                <li><a href="/my-orders">Your Orders</a></li>
+                
+           
+               
+            </ul>
+        </div>
+
+        <!-- About Daraz -->
+        <div  style="text-align: center;">
+            <h3>
+             <a href="/">
+            <img src="{% static 'images/logo.png' %}" alt="Hat Logo" style="height: 50px; margin-top: 10px;">
+            
+              HAT</a> </h3>
+            
+        </div>
+
+        <!-- App Download -->
+        <div style="text-align: center;">
+          <h4 style="font-style: italic;">Happy Shopping with</h4>
+          <a href="/"> 
+          <img src="{% static 'images/logo.png' %}" alt="Hat Logo" style="height: 50px; margin-top: 10px;">
+          </a>
+          </div>
+
+    </div>
+
+    <hr style="margin: 40px auto; width: 90%;">
+
+    <div style="max-width: 1200px; margin: auto; display: flex; justify-content: space-between; flex-wrap: wrap;">
+        <!-- Payment Methods -->
+        <div>
+            <h4>Payment Methods</h4>
+            <h6>BKASH</h6>
+            <h6>Cash on Delivery</h6>
+        </div>
+
+        <!-- Verified By -->
+        
+
+       
+    </div>
+</footer>
+
+{% endblock body %}
+<script>
+    const endTime = new Date();
+    endTime.setHours(endTime.getHours() + 2);
+
+    function updateCountdown() {
+        const now = new Date();
+        const distance = endTime - now;
+
+        if (distance > 0) {
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown").innerText =
+                `(Ends in ${hours}h ${minutes}m ${seconds}s)`;
+        } else {
+            document.getElementById("countdown").innerText = "(Flash Sale Ended)";
+        }
+    }
+
+    setInterval(updateCountdown, 1000);
+</script>
+
+

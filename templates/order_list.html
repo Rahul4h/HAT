@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My Orders{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h2 class="mb-4">🧾 My Orders</h2>
+
+    {% if orders %}
+        {% for order in orders %}
+        <div class="border rounded shadow-sm p-4 mb-4 bg-white">
+            <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+                <div>
+                    <strong>Order #{{ order.id }}</strong> • 
+                    <small class="text-muted">{{ order.created_at|date:"F d, Y - h:i A" }}</small>
+                </div>
+                <div class="text-end">
+                    <!-- Delivery status badge -->
+                    <span class="badge 
+                        {% if order.is_cancelled %} bg-danger 
+                        {% elif order.delivery_status == 'delivered' %} bg-success 
+                        {% else %} bg-warning text-dark {% endif %}">
+                        {% if order.is_cancelled %} Cancelled 
+                        {% elif order.delivery_status == 'delivered' %} Delivered 
+                        {% else %} {{ order.delivery_status|title }} {% endif %}
+                    </span>
+
+                    <!-- Return request badge -->
+                    {% if order.return_request %}
+                        {% if order.return_request.status == 'collected' %}
+                            <span class="badge bg-info text-dark">Returned</span>
+                        {% elif order.return_request.status == 'cancelled' %}
+                            <span class="badge bg-danger">Return Cancelled</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Return: {{ order.return_request.status|title }}</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Ordered Products -->
+            {% for item in order.items.all %}
+            <div class="row align-items-center border-top pt-3 pb-2">
+                <div class="col-md-2 col-4">
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.title }}" class="img-fluid rounded" style="height: 80px; object-fit: contain;">
+                </div>
+                <div class="col-md-6 col-8">
+                    <a href="{% url 'product_detail' item.product.id %}" class="text-decoration-none text-dark fw-bold">{{ item.product.title }}</a>
+                    <div class="text-muted small">Quantity: {{ item.quantity }}</div>
+                </div>
+                <div class="col-md-2 d-none d-md-block text-end">
+                    <div class="fw-bold">৳{{ item.product.sale_price|floatformat:2 }}</div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Delivery confirmation (only if marked by boy and not yet confirmed by customer) -->
+            {% if order.delivery_info and order.delivery_info.marked_delivered_by_boy and not order.delivery_info.confirmed_by_customer %}
+
+            <div class="alert alert-info mt-3">
+                <strong>Delivery Confirmation:</strong> Is your product delivered?
+                <form method="post" action="{% url 'confirm_delivery' order.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-success">Yes, Confirm</button>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Total and Actions -->
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-3 flex-wrap">
+                <div>
+                    <strong>Total: ৳
+                        {% if order.payment_method == 'cod' %}
+                            {{ order.extra_cod_amount|default:order.total|floatformat:2 }}
+                        {% else %}
+                            {{ order.total|floatformat:2 }}
+                        {% endif %}
+                    </strong> | Payment: <span class="text-muted">{{ order.payment_method }}</span>
+                </div>
+
+                <div class="mt-2 mt-md-0">
+                    {% if not order.is_cancelled and order.delivery_status != 'delivered' %}
+                        <a href="{% url 'update_order' order.id %}" class="btn btn-sm btn-outline-primary me-2">Update</a>
+                        <form action="{% url 'cancel_order' order.id %}" method="POST" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+                        </form>
+                    {% endif %}
+
+                    {% if order.delivery_status == 'delivered' and not order.is_cancelled and not order.return_request %}
+                        <button class="btn btn-sm btn-outline-secondary mt-2" data-bs-toggle="collapse" data-bs-target="#returnForm{{ order.id }}">Return / Refund</button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Return form -->
+            {% if order.delivery_status == 'delivered' and not order.is_cancelled and not order.return_request %}
+            <div class="collapse mt-3" id="returnForm{{ order.id }}">
+                <form action="{% url 'create_return_request' order.id %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <textarea name="reason" class="form-control mb-2" rows="2" placeholder="Return reason..." required></textarea>
+                    <input type="file" name="image" class="form-control mb-2" required>
+                    <button type="submit" class="btn btn-sm btn-outline-dark">Submit Return Request</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info">You have no orders yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

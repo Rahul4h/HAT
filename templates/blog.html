@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %} Blog {% endblock title %}
+{% block body %}
+
+<style>
+    .blog-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .blog-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+    .blog-img {
+        height: 200px;
+        object-fit: cover;
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+    }
+    .blog-title {
+        font-size: 1.1rem;
+        color: #212529;
+        font-weight: 600;
+    }
+    .blog-meta {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+    .category-sidebar {
+        position: sticky;
+        top: 80px;
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4 fw-bold text-dark">📰 Latest Blog Posts</h2>
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4 category-sidebar">
+            <div class="bg-light p-3 rounded shadow-sm">
+                <h5 class="mb-3 text-dark fw-bold">Filter by Category</h5>
+                <form method="get" action="{% url 'handleBlog' %}">
+                    <div class="d-grid gap-2">
+                    <button type="submit" name="category" value="" class="btn {% if not active_category %}btn-dark{% else %}btn-outline-dark{% endif %}">All</button>
+                   <button type="submit" name="category" value="Shirt" class="btn {% if active_category == 'Shirt' %}btn-dark{% else %}btn-outline-dark{% endif %}">Shirt</button>
+                    <button type="submit" name="category" value="T-shirt" class="btn {% if active_category == 'T-shirt' %}btn-dark{% else %}btn-outline-dark{% endif %}">T-shirt</button>
+                   <button type="submit" name="category" value="Saree" class="btn {% if active_category == 'Saree' %}btn-dark{% else %}btn-outline-dark{% endif %}">Saree</button>
+                  <button type="submit" name="category" value="Shoes" class="btn {% if active_category == 'Shoes' %}btn-dark{% else %}btn-outline-dark{% endif %}">Shoes</button>
+                  <button type="submit" name="category" value="Car" class="btn {% if active_category == 'Car' %}btn-dark{% else %}btn-outline-dark{% endif %}">Car</button>
+                  <button type="submit" name="category" value="Frame" class="btn {% if active_category == 'Frame' %}btn-dark{% else %}btn-outline-dark{% endif %}">Frame</button>
+                  <button type="submit" name="category" value="Toys" class="btn {% if active_category == 'Toys' %}btn-dark{% else %}btn-outline-dark{% endif %}">Toys</button>
+                  <button type="submit" name="category" value="Fan" class="btn {% if active_category == 'Fan' %}btn-dark{% else %}btn-outline-dark{% endif %}">Fan</button>
+                   <button type="submit" name="category" value="Jeans" class="btn {% if active_category == 'Jeans' %}btn-dark{% else %}btn-outline-dark{% endif %}">Jeans</button>
+                  <button type="submit" name="category" value="Cake" class="btn {% if active_category == 'Cake' %}btn-dark{% else %}btn-outline-dark{% endif %}">Cake</button>
+                  <button type="submit" name="category" value="Dryfruits" class="btn {% if active_category == 'Dryfruits' %}btn-dark{% else %}btn-outline-dark{% endif %}">Dryfruits</button>
+                  <button type="submit" name="category" value="Ear-phone" class="btn {% if active_category == 'Ear-phone' %}btn-dark{% else %}btn-outline-dark{% endif %}">Ear-phone</button>
+                 <button type="submit" name="category" value="Laptop" class="btn {% if active_category == 'Laptop' %}btn-dark{% else %}btn-outline-dark{% endif %}">Laptop</button>
+                 <button type="submit" name="category" value="Phone" class="btn {% if active_category == 'Phone' %}btn-dark{% else %}btn-outline-dark{% endif %}">Phone</button>
+                </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- Blog posts -->
+        <div class="col-md-9">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for post in allPosts reversed %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 blog-card rounded-4">
+                        <a href="{% url 'blog_detail' post.id %}">
+                            <img src="{{ post.img.url }}" class="card-img-top blog-img" alt="{{ post.title }}">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="blog-title">
+                                <a href="{% url 'blog_detail' post.id %}" class="text-decoration-none text-dark">
+                                    {{ post.title|truncatechars:55 }}
+                                </a>
+                            </h5>
+                            <p class="text-muted small mt-2 mb-3">
+                                {{ post.description|truncatechars:85 }}
+                            </p>
+                        </div>
+                        <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center blog-meta">
+                            <span>👤 {{ post.authname }}</span>
+                            <span>📅 {{ post.timeStamp|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-center text-muted">No posts found in this category.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

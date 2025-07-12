@@ -1,0 +1,97 @@
+{% extends 'deliveryboy_base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+  <h3 class="mb-4">Welcome, {{ deliveryboy.user.username }}</h3>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- My Assigned Deliveries Section -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-success text-white">
+      <strong>My Assigned Deliveries</strong>
+    </div>
+    <div class="card-body">
+      {% if my_deliveries %}
+        {% for order in my_deliveries %}
+          {% if not order.confirmed_by_customer %}
+            <div class="border-bottom pb-3 mb-3">
+              <p><strong>Order #
+                {% if order.order %}
+                  {{ order.order.id }}
+                {% else %}
+                  {{ order.id }}
+                {% endif %}
+              </strong> | {{ order.user.username }} | ৳{{ order.total }}</p>
+
+              <p><strong>Address:</strong> {{ order.address }}</p>
+
+              {% if order.order_image %}
+                <img src="{{ order.order_image.url }}" alt="Order Image" class="img-thumbnail" width="150">
+              {% endif %}
+
+              {% if not order.marked_delivered_by_boy %}
+                <form method="post" action="{% url 'mark_order_delivered' order.id %}">  <!-- order here is DeliveryOrder -->
+
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-success mt-2">Mark as Delivered</button>
+                </form>
+              {% else %}
+                <span class="badge bg-info mt-2">Waiting for customer confirmation</span>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <p>No active delivery tasks assigned to you.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- My Assigned Returns Section -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-warning text-dark">
+      <strong>My Assigned Returns</strong>
+    </div>
+    <div class="card-body">
+      {% if my_returns %}
+        {% for ret in my_returns %}
+          <div class="border-bottom pb-3 mb-3">
+            <p><strong>Return #{{ ret.id }}</strong> | {{ ret.customer.username }} | ৳{{ ret.amount }}</p>
+            <p><strong>Reason:</strong> {{ ret.reason }}</p>
+            {% if ret.image %}
+              <img src="{{ ret.image.url }}" alt="Return Image" class="img-thumbnail" width="150">
+            {% endif %}
+            <form method="post" action="{% url 'mark_return_collected' ret.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-warning mt-2">Mark as Collected</button>
+            </form>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No active return tasks assigned to you.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Delivery Boy Info -->
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Contact Info</h5>
+          <p class="card-text"><strong>Phone:</strong> {{ deliveryboy.phone }}</p>
+          <p class="card-text"><strong>Address:</strong> {{ deliveryboy.address }}</p>
+          <p class="card-text"><small class="text-muted">Joined {{ deliveryboy.joined_at|date:"F j, Y" }}</small></p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

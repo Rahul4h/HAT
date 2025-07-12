@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Home{% endblock title %}
+
+{% block body %}
+
+<style>
+    html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 80px;
+    }
+
+    .product-card {
+        border: 1px solid #eee;
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+        transition: box-shadow 0.3s;
+        background-color: #fff;
+        height: 100%;
+        position: relative;
+    }
+
+    .product-card:hover {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .product-image {
+        height: 150px;
+        width: 100%;
+        object-fit: contain;
+    }
+
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: red;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+    }
+
+    .countdown {
+        font-size: 0.85rem;
+        color: #777;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        position: fixed;
+        top: 100px;
+        left: 0;
+        width: 170px;
+        background: #f8f9fa;
+        border-right: 1px solid #ddd;
+        padding: 10px;
+        height: auto;
+        z-index: 1000;
+        border-radius: 0 8px 8px 0;
+    }
+
+    .sidebar a {
+        display: block;
+        padding: 10px;
+        margin: 8px 0;
+        background: #fff;
+        border-radius: 5px;
+        text-align: center;
+        text-decoration: none;
+        color: #333;
+        transition: 0.2s;
+        font-weight: 500;
+    }
+
+    .sidebar a:hover {
+        background-color: #007bff;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            display: none;
+        }
+
+        .container {
+            margin-left: 0 !important;
+        }
+    }
+</style>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <a href="#flash-sale">🔥 Hot Deal</a>
+    <a href="#only-for-you">🫵 Only for You</a>
+    <a href="#all-products">🛍 All Products</a>
+</div>
+
+<!-- Main Content -->
+<div class="container my-5" style="margin-left: 180px;">
+    
+    <!-- Flash Sale Section -->
+    <h3 class="mb-4" id="flash-sale">🔥 Hot Deal <span class="countdown" id="countdown"></span></h3>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4 mb-5">
+        {% for product in flash_sale_products %}
+        <div class="col d-flex">
+            <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark w-100">
+                <div class="product-card flex-fill">
+                    {% if product.original_price > product.sale_price %}
+                    <div class="discount-badge">-{{ product.discount_percentage|floatformat:0 }}%</div>
+                    {% endif %}
+                    <img src="{{ product.image.url }}" class="product-image mb-2" alt="{{ product.title }}">
+                    <h6>{{ product.title }}</h6>
+                    <p class="text-danger mb-1">৳{{ product.sale_price }}
+                        <del class="text-muted">৳{{ product.original_price }}</del>
+                    </p>
+                    <button class="btn btn-sm btn-outline-primary mt-2">Explore</button>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Only For You Section -->
+    {% if only_for_you %}
+    <h3 class="mb-4" id="only-for-you">🫵 Only for You</h3>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4 mb-5">
+        {% for product in only_for_you %}
+        <div class="col d-flex">
+            <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark w-100">
+                <div class="product-card flex-fill">
+                    {% if product.original_price > product.sale_price %}
+                    <div class="discount-badge">-{{ product.discount_percentage|floatformat:0 }}%</div>
+                    {% endif %}
+                    <img src="{{ product.image.url }}" class="product-image mb-2" alt="{{ product.title }}">
+                    <h6>{{ product.title }}</h6>
+                    <p class="text-danger mb-1">৳{{ product.sale_price }}
+                        <del class="text-muted">৳{{ product.original_price }}</del>
+                    </p>
+                    <button class="btn btn-sm btn-outline-primary mt-2">Explore</button>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- All Products Section -->
+    <h3 class="mb-4" id="all-products">🛍 All Products</h3>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4">
+        {% for product in products %}
+        <div class="col d-flex">
+            <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark w-100">
+                <div class="product-card flex-fill">
+                    {% if product.original_price > product.sale_price %}
+                    <div class="discount-badge">-{{ product.discount_percentage|floatformat:0 }}%</div>
+                    {% endif %}
+                    <img src="{{ product.image.url }}" class="product-image mb-2" alt="{{ product.title }}">
+                    <h6>{{ product.title }}</h6>
+                    <p class="text-danger mb-1">৳{{ product.sale_price }}
+                        <del class="text-muted">৳{{ product.original_price }}</del>
+                    </p>
+                    <button class="btn btn-sm btn-outline-primary mt-2">Explore</button>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Footer -->
+<footer style="background-color:rgb(22, 5, 5); padding: 40px 0; font-family: Arial, sans-serif;">
+    <div style="max-width: 1200px; margin: auto; display: flex; justify-content: space-between; flex-wrap: wrap;">
+        <div>
+            <ul style="list-style: none; padding: 0;">
+                <li><a href="/contact"class="text-decoration-none">HELP & CONTACT</a></li>
+                <li><a href="{% url 'cart' %}"class="text-decoration-none">🛒 CART</a></li>
+                <li><a href="/about"class="text-decoration-none">ABOUT HAT</a></li>
+                <li><a href="/blog"class="text-decoration-none">BLOG</a></li>
+                <li><a href="/"class="text-decoration-none">SHOP</a></li>
+                <li><a href="/my-orders"class="text-decoration-none">ORDERS</a></li>
+            </ul>
+        </div>
+        <div style="text-align: center;">
+            <h3>
+                <a href="/" class="text-decoration-none">
+                    <img src="{% static 'images/logoe.png' %}" alt="Hat Logo" style="height: 50px; margin-top: 10px;">
+                    HAT
+                </a>
+            </h3>
+        </div>
+        <div style="text-align: center;">
+            <h4 style="font-style: italic; color: white;">Happy Shopping with</h4>
+            <a href="/"> 
+                <img src="{% static 'images/logoe.png' %}" alt="Hat Logo" style="height: 50px; margin-top: 10px;">
+            </a>
+        </div>
+    </div>
+    <hr style="margin: 40px auto; width: 90%; color:white;">
+    <div style="max-width: 1200px; margin: auto; display: flex; justify-content: space-between; flex-wrap: wrap; color: white;">
+        <div>
+            <h4>Payment Methods</h4>
+            <h6>BKASH</h6>
+            <h6>Cash on Delivery</h6>
+        </div>
+    </div>
+</footer>
+
+{% endblock body %}

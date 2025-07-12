@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Update Order{% endblock %}
+{% block body %}
+
+<div class="container py-5">
+    <h3>📝 Update Order #{{ order.id }}</h3>
+    <hr>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Shipping Address -->
+        <div class="mb-4">
+            <h5>Shipping Information</h5>
+            <div class="border p-3 rounded">
+                {{ shipping_form.as_p }}
+            </div>
+        </div>
+
+        <!-- Ordered Items -->
+        <div class="mb-4">
+            <h5>Ordered Products</h5>
+            <div class="border p-3 rounded">
+                {{ formset.management_form }}
+                {% for form in formset %}
+                    <div class="mb-3">
+                        {{ form.as_p }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="mb-4">
+            <h5>Select Payment Method</h5>
+            <div class="border p-3 rounded">
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" name="payment_method" id="payment_stripe" value="stripe" required>
+                    <label class="form-check-label" for="payment_stripe">💳 Pay with Stripe</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" required>
+                    <label class="form-check-label" for="cod">Cash on Delivery</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-success">Update Order</button>
+        <a href="{% url 'order_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', function (e) {
+        const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
+
+        if (selectedMethod && selectedMethod.value === 'stripe') {
+            e.preventDefault();  // prevent normal form submit
+
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const formData = new FormData(form);
+
+            fetch(window.location.href, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Accept': 'application/json',
+                },
+                body: formData
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Network response was not ok');
+                return res.json();
+            })
+            .then(data => {
+                if (data.session_url) {
+                    // Redirect to Stripe Checkout page
+                    window.location.href = data.session_url;
+                } else {
+                    alert("Something went wrong. Try again.");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Payment failed.");
+            });
+        }
+    });
+});
+</script>
+
+{% endblock %}

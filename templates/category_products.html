@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{{ category_name }} Products{% endblock %}
+{% block body %}
+<div class="container py-5">
+    <h2 class="mb-4">{{ category_name }} Products</h2>
+
+    <div class="row">
+        {% for product in products %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.title }}</h5>
+                        <p class="card-text text-danger">৳{{ product.sale_price }}</p>
+                        <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">View</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>No products found in this category.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

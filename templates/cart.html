@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load cart_extras %}
+{% block title %}Cart{% endblock %}
+{% block body %}
+<div class="container py-5">
+    <h2 class="mb-4 text-center">🛒 Your Shopping Cart</h2>
+
+    {% if cart_items %}
+    <div class="table-responsive">
+        <table class="table table-borderless align-middle shadow-sm rounded bg-white">
+            <thead class="table-light text-uppercase border-bottom">
+                <tr class="text-secondary fw-bold">
+                    <th scope="col">Product</th>
+                    <th scope="col">Price</th>
+                    <th scope="col" class="text-center">Quantity</th>
+                    <th scope="col">Subtotal</th>
+                    <th scope="col" class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="border-top">
+                {% for item in cart_items %}
+                <tr class="align-middle border-bottom">
+                    <td>
+                        <a href="{% url 'product_detail' item.product.id %}" class="d-flex align-items-center text-decoration-none text-dark">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.title }}"
+                                class="rounded me-3" style="height: 70px; width: 70px; object-fit: cover; border: 1px solid #ccc;">
+                            <div>
+                                <div class="fw-semibold">{{ item.product.title }}</div>
+                                <small class="text-muted">Product ID: {{ item.product.id }}</small>
+                            </div>
+                        </a>
+                    </td>
+                    <td class="fw-bold text-success">৳{{ item.product.sale_price|floatformat:2 }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'update_cart' item.id %}" class="d-flex flex-column align-items-start">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
+                                class="form-control form-control-sm mb-2 text-center" style="width: 80px;">
+                            <button type="submit" class="btn btn-sm btn-outline-warning w-100">Update</button>
+                        </form>
+                    </td>
+                    <td>
+                        ৳{{ item.product.sale_price|floatformat:2 }} × {{ item.quantity }} =
+                        <strong class="text-primary">৳{{ item.product.sale_price|mul:item.quantity|floatformat:2 }}</strong>
+                    </td>
+                    <td class="text-center">
+                        <div class="d-flex flex-column gap-2">
+                            <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-sm btn-outline-dark">
+                                <i class="bi bi-trash"></i> Remove
+                            </a>
+                            <a href="{% url 'checkout' item.product.id %}" class="btn btn-sm btn-outline-success">
+                                <i class="bi bi-bag-check-fill"></i> Checkout
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="border-top">
+                <tr>
+                    <td colspan="3" class="text-end fw-bold fs-5">Total:</td>
+                    <td colspan="2" class="fw-bold fs-5 text-success">৳{{ total_amount|floatformat:2 }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    {% else %}
+        <div class="alert alert-info text-center">Your cart is empty. Start shopping now!</div>
+    {% endif %}
+</div>
+{% endblock %}

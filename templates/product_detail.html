@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.title }}{% endblock %}
+{% block body %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.title }}">
+        </div>
+        <div class="col-md-6">
+            <h2>{{ product.title }}</h2>
+            <p class="text-danger">
+                ৳{{ product.sale_price }} 
+                <del class="text-muted">৳{{ product.original_price }}</del>
+            </p>
+            <p><strong>Pieces Imported:</strong> {{ product.piece }}</p>
+            <p><strong>In Stock:</strong> {{ product.stock }}</p>
+
+
+            <!-- ✅ Add to Cart Form -->
+            <form method="POST" action="{% url 'add_to_cart' product.id %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">Quantity:</label>
+                    <input type="number" name="quantity" id="quantity" min="1" max="{{ product.piece }}" value="1" class="form-control" style="width: 100px;">
+                </div>
+                <button type="submit" class="btn btn-success">Add to Cart 🛒</button>
+            </form>
+            <form method="POST" action="{% url 'checkout' product.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="quantity" value="1">
+              <button class="btn btn-primary mt-2" type="submit">Buy Now</button>
+            </form>
+
+           
+        </div>
+    </div>
+
+    <!-- ✅ Comments Section -->
+    <hr class="my-5">
+<div class="row">
+    <div class="col-md-8">
+     <h4>🗨️ Comments</h4>
+
+     {% for comment in comments %}
+        <div class="border rounded p-3 mb-3">
+            <strong>{{ comment.user.username }}</strong>
+            <small class="text-muted">{{ comment.created_at|date:"d M, Y H:i" }}</small>
+            <p class="mt-2 mb-1">{{ comment.content }}</p>
+
+            <!-- ✅ Reply button -->
+            <button class="btn btn-sm btn-link text-primary" onclick="showReplyForm({{ comment.id }})">Reply</button>
+
+            <!-- ✅ Reply form (hidden by default) -->
+            <div id="reply-form-{{ comment.id }}" class="mt-2 mb-2" style="display:none;">
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="hidden" name="parent" value="{{ comment.id }}">
+                    <button type="submit" class="btn btn-sm btn-outline-success">Submit Reply</button>
+                </form>
+            </div>
+
+            <!-- ✅ Replies -->
+            {% for reply in comment.replies.all %}
+                <div class="ms-4 mt-3 p-2 border-start border-2">
+                    <strong>{{ reply.user.username }}</strong>
+                    <small class="text-muted">{{ reply.created_at|date:"d M, Y H:i" }}</small>
+                    <p class="mb-0">{{ reply.content }}</p>
+                </div>
+            {% endfor %}
+        </div>
+     {% empty %}
+        <p>No comments yet. Be the first to comment!</p>
+     {% endfor %}
+   </div>
+
+
+{% if can_comment %}
+<div class="col-md-8 mt-4">
+    <h5>💬 Add a Comment</h5>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="hidden" name="parent" value="">
+        <button type="submit" class="btn btn-outline-primary">Post Comment</button>
+    </form>
+</div>
+{% endif %}
+
+ </div>
+</div>
+<script>
+function showReplyForm(commentId) {
+    // Hide all other reply forms
+    document.querySelectorAll("[id^='reply-form-']").forEach(form => form.style.display = 'none');
+
+    // Show only the selected one
+    document.getElementById('reply-form-' + commentId).style.display = 'block';
+
+    // Set the parent id in the visible form
+    const input = document.querySelector(`#reply-form-${commentId} input[name='parent']`);
+    input.value = commentId;
+}
+</script>
+
+{% endblock %}

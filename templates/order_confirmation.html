@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Order Confirmation{% endblock %}
+
+{% block body %}
+<div class="container py-5 text-center">
+    <h2>{{ message }}</h2>
+
+    {% if product %}
+    <div class="card mt-4">
+        <div class="card-body">
+            <img src="{{ product.image.url }}" style="height: 120px;"><br>
+            <h4 class="mt-3">{{ product.title }}</h4>
+            <p>Price: ৳{{ product.sale_price }}</p>
+            <p>Ordered Quantity: {{ quantity }}</p>
+            <p>Total Paid: ৳{{ total }}</p>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <!-- 🔁 Reorder Form -->
+        <form action="{% url 'reorder' product.id %}" method="POST" class="d-inline-block">
+            {% csrf_token %}
+            <input type="number" name="quantity" min="1" value="{{ quantity }}" class="form-control d-inline-block" style="width: 80px;">
+            <button type="submit" class="btn btn-primary">Reorder</button>
+        </form>
+
+        <!-- ❌ Cancel Order Button -->
+        <form action="{% url 'cancel_order' order_id=order_id %}" method="POST">
+           {% csrf_token %}
+            <button class="btn btn-danger" type="submit">Cancel Order</button>
+             </form>
+
+    </div>
+    {% endif %}
+
+    <a href="/" class="btn btn-success mt-4">🏠 Back to Home</a>
+</div>
+{% endblock %}
+
