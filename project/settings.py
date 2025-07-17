@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-_#tq1cj2i(k)z5!bmku0bb_+ae*a&fl^xjiuvne(#lq1=5a!%y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost','hat-t52a.onrender.com',]
 
@@ -173,6 +173,7 @@ DEFAULT_FROM_EMAIL = 'Rahul from HAT <rahul255gh68@gmail.com>'
 import os
 STATIC_URL = '/static/'
 STATICFILES_DIRS =[os.path.join(BASE_DIR,'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
