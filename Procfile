@@ -1,1 +1,1 @@
-web: gunicorn HAT.wsgi
+web: gunicorn HAT.wsgi:application
