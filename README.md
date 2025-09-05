@@ -62,7 +62,16 @@ venv\Scripts\activate      # For Windows
 python manage.py migrate
 4.Create Super user
 python manage.py createsuperuser
-5.Run the Server
+
+5.Set up Google OAuth
+
+Create a project in Google Cloud Console
+
+Enable OAuth credentials for http://127.0.0.1:8000/
+
+Add client ID & secret in Django settings (settings.py)
+
+6.Run the Server
 python manage.py runserver
 
 👨‍💻 Author
