@@ -65,4 +65,9 @@ python manage.py createsuperuser
 5.Run the Server
 python manage.py runserver
 
+👨‍💻 Author
+
+Rahul Ghosh
+💼 Django & FastAPI Developer
+
 
