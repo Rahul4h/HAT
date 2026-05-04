@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load socialaccount %}
 
 {% block title %}Login{% endblock %}
 
@@ -25,16 +24,9 @@
           </div>
           {% endfor %}
 
-          <!-- Google Login Button -->
-          <form method="POST" action="{% provider_login_url 'google' %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center gap-2">
-              <img src="https://img.icons8.com/color/30/000000/google-logo.png" alt="Google logo">
-              <span>Login with Google</span>
-            </button>
-          </form>
-
-          <div class="text-center my-3 text-muted">OR</div>
+          <div class="alert alert-secondary" role="alert">
+            Google login is currently unavailable. Please log in with your username and password.
+          </div>
 
           <!-- Username/Password Login -->
           <form action="/login" method="post">

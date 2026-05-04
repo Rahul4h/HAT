@@ -9,13 +9,20 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+from pathlib import Path
 import os
 
-from pathlib import Path
+import dj_database_url
+from dotenv import load_dotenv
 from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+
+
+def env_bool(name: str, default: bool = False) -> bool:
+    return os.environ.get(name, str(default)).lower() in {"1", "true", "yes", "on"}
 
 
 
@@ -23,16 +30,30 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_#tq1cj2i(k)z5!bmku0bb_+ae*a&fl^xjiuvne(#lq1=5a!%y'
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    "django-insecure-_#tq1cj2i(k)z5!bmku0bb_+ae*a&fl^xjiuvne(#lq1=5a!%y",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env_bool("DEBUG", True)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost','hat-t52a.onrender.com',]
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get(
+        "ALLOWED_HOSTS",
+        "127.0.0.1,localhost,.onrender.com,hat-t52a.onrender.com",
+    ).split(",")
+    if host.strip()
+]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://127.0.0.1:8000",
-    "https://localhost:8000",
+    origin.strip()
+    for origin in os.environ.get(
+        "CSRF_TRUSTED_ORIGINS",
+        "https://*.onrender.com,https://127.0.0.1:8000,https://localhost:8000",
+    ).split(",")
+    if origin.strip()
 ]
 
 
@@ -57,6 +78,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -73,7 +95,7 @@ AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',
 
 
 
-SITE_ID = 2
+SITE_ID = 1
 LOGIN_REDIRECT_URL ='/'
 
 #SOCIALACCOUNT_PROVIDERS = {'google': {
@@ -120,15 +142,15 @@ ASGI_APPLICATION = 'project.asgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-DATABASES={
-    'default':{
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'hat_db',
-        'USER': 'hat_user',
-        'PASSWORD': 'mypassword',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+DATABASES = {
+    "default": dj_database_url.config(
+        default=os.environ.get(
+            "DATABASE_URL",
+            "postgres://hat_user:mypassword@localhost:5432/hat_db",
+        ),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 # Password validation
@@ -163,23 +185,26 @@ USE_TZ = True
 
 
 
-EMAIL_HOST='smtp.gmail.com'
-EMAIL_HOST_USER='rahul255gh68@gmail.com'
-EMAIL_HOST_PASSWORD='getb dpzl yhhb iptk'
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "rahul255gh68@gmail.com")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "getb dpzl yhhb iptk")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-DEFAULT_FROM_EMAIL = 'Rahul from HAT <rahul255gh68@gmail.com>'
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL",
+    f"Rahul from HAT <{EMAIL_HOST_USER}>",
+)
 
 
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-import os
 STATIC_URL = '/static/'
 STATICFILES_DIRS =[os.path.join(BASE_DIR,'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
@@ -197,7 +222,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")],
 
          },
     },
@@ -205,7 +230,13 @@ CHANNEL_LAYERS = {
 
 
 # Stripe API Keys
-STRIPE_PUBLIC_KEY = 'pk_test_51RhoNlGdioOL2exhtoPE4gIiNcuxLYfO7gw4GfUg37K6a3Kw2NyXgryy5cpVnQ9uhOUoNCQIwLGwGB69nI142uUT00Y5dAbzL1'
-STRIPE_SECRET_KEY = 'sk_test_51RhoNlGdioOL2exhdgsT9kSgP9mtRedBlmbfODunxCutsFxYNvaMEJ6NMVxkr5xwnAPrTwdR41KCYTSWoXCUTy9e00A0u2hQHY'
+STRIPE_PUBLIC_KEY = os.environ.get(
+    "STRIPE_PUBLIC_KEY",
+    "pk_test_51RhoNlGdioOL2exhtoPE4gIiNcuxLYfO7gw4GfUg37K6a3Kw2NyXgryy5cpVnQ9uhOUoNCQIwLGwGB69nI142uUT00Y5dAbzL1",
+)
+STRIPE_SECRET_KEY = os.environ.get(
+    "STRIPE_SECRET_KEY",
+    "sk_test_51RhoNlGdioOL2exhdgsT9kSgP9mtRedBlmbfODunxCutsFxYNvaMEJ6NMVxkr5xwnAPrTwdR41KCYTSWoXCUTy9e00A0u2hQHY",
+)
 
 

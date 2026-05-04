@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load static %}
-{% load socialaccount %}
 
 {% block title %}Sign Up{% endblock %}
 
@@ -30,13 +29,9 @@
           {% endif %}
 
           <!-- Google Signup -->
-          <form method="POST" action="{% provider_login_url 'google' %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center gap-2 mb-3">
-              <img src="https://img.icons8.com/color/30/000000/google-logo.png" alt="Google logo">
-              <span>Sign up with Google</span>
-            </button>
-          </form>
+          <div class="alert alert-secondary" role="alert">
+            Google signup is currently unavailable. Please create your account with email and password.
+          </div>
 
           <div class="text-center text-muted mb-3">— or create with email —</div>
 
