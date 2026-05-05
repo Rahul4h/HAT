@@ -20,6 +20,16 @@ services:
         fromDatabase:
           name: hat-postgres
           property: connectionString
+      - key: USE_CLOUDINARY
+        value: "True"
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
       - key: DJANGO_SUPERUSER_USERNAME
         sync: false
       - key: DJANGO_SUPERUSER_EMAIL

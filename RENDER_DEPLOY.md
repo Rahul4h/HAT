@@ -23,10 +23,19 @@ DATABASE_URL=<Render Postgres internal connection string>
 DJANGO_SUPERUSER_USERNAME=admin
 DJANGO_SUPERUSER_EMAIL=your-email@example.com
 DJANGO_SUPERUSER_PASSWORD=your-strong-password
+USE_CLOUDINARY=True
+CLOUDINARY_URL=cloudinary://API_KEY:API_SECRET@CLOUD_NAME
 ```
 
 The deploy command runs migrations and creates/updates the superuser
 automatically, so you do not need Render Shell for that.
+
+## Cloudinary media uploads
+
+Uploaded product, blog, order, and return images use Cloudinary when
+`USE_CLOUDINARY=True` and `CLOUDINARY_URL` is set. Existing files that were
+previously saved in Render's local `media/` folder must be re-uploaded or
+migrated to Cloudinary, because changing storage does not copy old files.
 
 ## Important free-tier note
 

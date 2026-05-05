@@ -69,6 +69,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django_extensions',
+    'cloudinary_storage',
+    'cloudinary',
     'app',
     'allauth',
     'allauth.account',
@@ -185,11 +187,11 @@ USE_TZ = True
 
 
 
-EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "rahul255gh68@gmail.com")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "getb dpzl yhhb iptk")
-EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
-EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT"))
+EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS")
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = os.environ.get(
     "DEFAULT_FROM_EMAIL",
@@ -204,10 +206,30 @@ DEFAULT_FROM_EMAIL = os.environ.get(
 STATIC_URL = '/static/'
 STATICFILES_DIRS =[os.path.join(BASE_DIR,'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
+}
+
+USE_CLOUDINARY = env_bool("USE_CLOUDINARY", bool(os.environ.get("CLOUDINARY_URL")))
+
+STORAGES = {
+    "default": {
+        "BACKEND": (
+            "cloudinary_storage.storage.MediaCloudinaryStorage"
+            if USE_CLOUDINARY
+            else "django.core.files.storage.FileSystemStorage"
+        ),
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -222,7 +244,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")],
+            "hosts": [os.environ.get("REDIS_URL")],
 
          },
     },
@@ -232,11 +254,11 @@ CHANNEL_LAYERS = {
 # Stripe API Keys
 STRIPE_PUBLIC_KEY = os.environ.get(
     "STRIPE_PUBLIC_KEY",
-    "pk_test_51RhoNlGdioOL2exhtoPE4gIiNcuxLYfO7gw4GfUg37K6a3Kw2NyXgryy5cpVnQ9uhOUoNCQIwLGwGB69nI142uUT00Y5dAbzL1",
+    
 )
 STRIPE_SECRET_KEY = os.environ.get(
     "STRIPE_SECRET_KEY",
-    "sk_test_51RhoNlGdioOL2exhdgsT9kSgP9mtRedBlmbfODunxCutsFxYNvaMEJ6NMVxkr5xwnAPrTwdR41KCYTSWoXCUTy9e00A0u2hQHY",
+    
 )
 
 

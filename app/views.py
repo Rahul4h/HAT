@@ -1090,8 +1090,6 @@ def request_return(request, order_id):
 
 from django.views.decorators.http import require_POST
 from .models import ReturnRequest
-from django.core.files.storage import FileSystemStorage
-
 @require_POST
 @login_required
 def create_return_request(request, order_id):
@@ -1104,19 +1102,13 @@ def create_return_request(request, order_id):
         messages.error(request, "Reason and image are required.")
         return redirect('order_list')
 
-    # Save image
-    fs = FileSystemStorage()
-    filename = fs.save(image.name, image)
-    uploaded_image_url = fs.url(filename)
-
     ReturnRequest.objects.create(
         order=order,
         customer=request.user,
         amount=order.total,
         status='pending',
         created_at=timezone.now(),
-        # optional: if you have image field
-         image=uploaded_image_url
+        image=image,
     )
 
     messages.success(request, "Return request submitted.")
