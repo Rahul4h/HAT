@@ -31,6 +31,7 @@ urlpatterns = [
    path('update-order/<int:order_id>/', views.update_order, name='update_order'),
    path('deliveryboy/login/', views.deliveryboy_login, name='deliveryboy_login'),
    path('deliveryboy/home/', views.deliveryboy_home, name='deliveryboy_home'),
+   path('deliveryboy/products/add/', views.deliveryboy_add_product, name='deliveryboy_add_product'),
    path('deliveryboy/signup/', views.deliveryboy_signup, name='deliveryboy_signup'),
    path(
         'deliveryboy/logout/',

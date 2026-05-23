@@ -79,6 +79,13 @@ class Product(models.Model):
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)
     stock = models.PositiveIntegerField(default=0, db_index=True)
     piece = models.IntegerField(default=0)
+    uploaded_by = models.ForeignKey(
+        'DeliveryBoy',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='uploaded_products',
+    )
 
     def __str__(self):
         return self.title

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate,login,logout
 
-from .forms import CommentForm,ShippingAddressForm
+from .forms import CommentForm,ShippingAddressForm,ProductForm
 from .models import Contact,Blogs,Product,Profile,CartItem,Comment,ShippingAddress,Order,OrderItem,ChatMessage,DeliveryBoy,DeliveryOrder,ReturnRequest,Recommendation
 from django.conf import settings
 #from django.core.mail import send_mail
@@ -431,6 +431,25 @@ def _send_mail_safely(*args, **kwargs):
     except Exception:
         pass
 
+
+def _create_delivery_order(order, product, shipping):
+    assigned_delivery_boy = product.uploaded_by
+    delivery_status = 'assigned' if assigned_delivery_boy else 'pending'
+
+    if assigned_delivery_boy:
+        order.delivery_status = 'assigned'
+        order.save(update_fields=['delivery_status'])
+
+    return DeliveryOrder.objects.create(
+        order=order,
+        user=order.user,
+        assigned_to=assigned_delivery_boy,
+        status=delivery_status,
+        address=shipping.address,
+        total=float(order.total),
+        payment_method=order.payment_method,
+    )
+
 @login_required
 def checkout(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -492,13 +511,7 @@ def checkout(request, product_id):
                     total=total
                 )
                 OrderItem.objects.create(order=order, product=product, quantity=quantity)
-                DeliveryOrder.objects.create(
-                    order=order,
-                    user=request.user,
-                    address=shipping.address,
-                    total=float(total),
-                    payment_method='Cash on Delivery',
-                )
+                _create_delivery_order(order, product, shipping)
 
             _send_mail_safely(
                 subject="Your Order Confirmation",
@@ -564,13 +577,7 @@ def stripe_success(request):
             total=total
         )
         OrderItem.objects.create(order=order, product=product, quantity=quantity)
-        DeliveryOrder.objects.create(
-            order=order,
-            user=request.user,
-            address=shipping.address,
-            total=float(total),
-            payment_method='Stripe',
-        )
+        _create_delivery_order(order, product, shipping)
 
     _send_mail_safely(
         subject="Your Stripe Order Confirmation",
@@ -972,15 +979,39 @@ def deliveryboy_home(request):
         status='assigned'
     ).order_by('-created_at')
 
+    my_products = Product.objects.filter(uploaded_by=deliveryboy).order_by('-id')[:10]
+
     context = {
         'deliveryboy': deliveryboy,
         'pending_deliveries': pending_deliveries,
         'pending_returns': pending_returns,
         'my_deliveries': my_deliveries,
         'my_returns': my_returns,
+        'my_products': my_products,
     }
 
     return render(request, 'deliveryboy_home.html', context)
+
+
+@login_required
+def deliveryboy_add_product(request):
+    if not hasattr(request.user, 'deliveryboy'):
+        return redirect('deliveryboy_login')
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.uploaded_by = request.user.deliveryboy
+            if not product.piece:
+                product.piece = product.stock
+            product.save()
+            messages.success(request, "Product added successfully.")
+            return redirect('deliveryboy_home')
+    else:
+        form = ProductForm()
+
+    return render(request, 'deliveryboy_add_product.html', {'form': form})
 
 
 
