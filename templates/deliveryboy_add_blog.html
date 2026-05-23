@@ -1,0 +1,19 @@
+{% extends 'deliveryboy_base.html' %}
+{% block title %}Write Blog{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0">Write Blog</h3>
+    <a href="{% url 'deliveryboy_home' %}" class="btn btn-outline-secondary">Back</a>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Publish Blog</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -232,7 +232,7 @@ has_cloudinary_credentials = bool(
         and os.environ.get("CLOUDINARY_API_SECRET")
     )
 )
-USE_CLOUDINARY = env_bool("USE_CLOUDINARY", has_cloudinary_credentials)
+USE_CLOUDINARY = env_bool("USE_CLOUDINARY", has_cloudinary_credentials) and has_cloudinary_credentials
 
 STORAGES = {
     "default": {

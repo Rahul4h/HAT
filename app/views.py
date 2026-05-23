@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate,login,logout
 
-from .forms import CommentForm,ShippingAddressForm,ProductForm
+from .forms import CommentForm,ShippingAddressForm,ProductForm,BlogForm
 from .models import Contact,Blogs,Product,Profile,CartItem,Comment,ShippingAddress,Order,OrderItem,ChatMessage,DeliveryBoy,DeliveryOrder,ReturnRequest,Recommendation
 from django.conf import settings
 #from django.core.mail import send_mail
@@ -17,7 +17,7 @@ from django.http import JsonResponse,HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.db import transaction
-from django.db.models import Q,F, ExpressionWrapper, FloatField, Max
+from django.db.models import Q,F, ExpressionWrapper, FloatField, Max, Value, Case, When
 from django.forms import modelform_factory,inlineformset_factory
 from django.utils import timezone
 
@@ -47,9 +47,30 @@ def index(request):
 
     # All products
     all_products = Product.objects.annotate(
-        discount_percentage=ExpressionWrapper(
-            (F('original_price') - F('sale_price')) * 100 / F('original_price'),
-            output_field=FloatField()
+        discount_percentage=Case(
+            When(
+                original_price__gt=0,
+                then=ExpressionWrapper(
+                    (F('original_price') - F('sale_price')) * 100 / F('original_price'),
+                    output_field=FloatField(),
+                ),
+            ),
+            default=Value(0.0),
+            output_field=FloatField(),
+        )
+    ).order_by('-id')[:30]
+
+    delivery_products = Product.objects.filter(uploaded_by__isnull=False).annotate(
+        discount_percentage=Case(
+            When(
+                original_price__gt=0,
+                then=ExpressionWrapper(
+                    (F('original_price') - F('sale_price')) * 100 / F('original_price'),
+                    output_field=FloatField(),
+                ),
+            ),
+            default=Value(0.0),
+            output_field=FloatField(),
         )
     ).order_by('-id')[:30]
 
@@ -74,6 +95,7 @@ def index(request):
     return render(request, 'index.html', {
         'flash_sale_products': flash_sale_products,
         'products': all_products,
+        'delivery_products': delivery_products,
         'only_for_you': only_for_you  # ✅ add to context
     })
 
@@ -440,15 +462,18 @@ def _create_delivery_order(order, product, shipping):
         order.delivery_status = 'assigned'
         order.save(update_fields=['delivery_status'])
 
-    return DeliveryOrder.objects.create(
+    delivery_order, _ = DeliveryOrder.objects.get_or_create(
         order=order,
-        user=order.user,
-        assigned_to=assigned_delivery_boy,
-        status=delivery_status,
-        address=shipping.address,
-        total=float(order.total),
-        payment_method=order.payment_method,
+        defaults={
+            'user': order.user,
+            'assigned_to': assigned_delivery_boy,
+            'status': delivery_status,
+            'address': shipping.address,
+            'total': float(order.total),
+            'payment_method': order.payment_method,
+        },
     )
+    return delivery_order
 
 @login_required
 def checkout(request, product_id):
@@ -1012,6 +1037,25 @@ def deliveryboy_add_product(request):
         form = ProductForm()
 
     return render(request, 'deliveryboy_add_product.html', {'form': form})
+
+
+@login_required
+def deliveryboy_add_blog(request):
+    if not hasattr(request.user, 'deliveryboy'):
+        return redirect('deliveryboy_login')
+
+    if request.method == 'POST':
+        form = BlogForm(request.POST, request.FILES)
+        if form.is_valid():
+            blog = form.save(commit=False)
+            blog.authname = request.user.username
+            blog.save()
+            messages.success(request, "Blog post added successfully.")
+            return redirect('handleBlog')
+    else:
+        form = BlogForm()
+
+    return render(request, 'deliveryboy_add_blog.html', {'form': form})
 
 
 

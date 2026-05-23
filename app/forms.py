@@ -1,5 +1,5 @@
 from django import forms
-from .models import Comment,ShippingAddress,Product
+from .models import Comment,ShippingAddress,Product,Blogs
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -40,4 +40,22 @@ class ProductForm(forms.ModelForm):
             'sale_price': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': '0.01'}),
             'stock': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
             'piece': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
+        }
+
+    def clean_original_price(self):
+        original_price = self.cleaned_data['original_price']
+        if original_price <= 0:
+            raise forms.ValidationError("Original price must be greater than 0.")
+        return original_price
+
+
+class BlogForm(forms.ModelForm):
+    class Meta:
+        model = Blogs
+        fields = ['title', 'description', 'img', 'category']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+            'img': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-select'}),
         }

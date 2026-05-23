@@ -146,6 +146,32 @@
     </div>
     {% endif %}
 
+    <!-- Delivery Products Section -->
+    {% if delivery_products %}
+    <h3 class="mb-4" id="delivery-products">Delivery Partner Products</h3>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4 mb-5">
+        {% for product in delivery_products %}
+        <div class="col d-flex">
+            <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark w-100">
+                <div class="product-card flex-fill">
+                    {% if product.original_price > product.sale_price %}
+                    <div class="discount-badge">-{{ product.discount_percentage|floatformat:0 }}%</div>
+                    {% endif %}
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" class="product-image mb-2" alt="{{ product.title }}">
+                    {% endif %}
+                    <h6>{{ product.title }}</h6>
+                    <p class="text-danger mb-1">à§³{{ product.sale_price }}
+                        <del class="text-muted">à§³{{ product.original_price }}</del>
+                    </p>
+                    <button class="btn btn-sm btn-outline-primary mt-2">Explore</button>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <!-- All Products Section -->
     <h3 class="mb-4" id="all-products">🛍 All Products</h3>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4">
