@@ -11,6 +11,11 @@
     <div class="card-body">
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        {% if form.errors %}
+          <div class="alert alert-danger">
+            Please fix the highlighted blog fields and submit again.
+          </div>
+        {% endif %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-success">Publish Blog</button>
       </form>

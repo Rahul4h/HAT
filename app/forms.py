@@ -42,11 +42,20 @@ class ProductForm(forms.ModelForm):
             'piece': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['piece'].required = False
+        self.fields['piece'].help_text = "Leave empty to use the same value as stock."
+
     def clean_original_price(self):
         original_price = self.cleaned_data['original_price']
         if original_price <= 0:
             raise forms.ValidationError("Original price must be greater than 0.")
         return original_price
+
+    def clean_piece(self):
+        piece = self.cleaned_data.get('piece')
+        return piece or self.cleaned_data.get('stock') or 0
 
 
 class BlogForm(forms.ModelForm):

@@ -1005,6 +1005,7 @@ def deliveryboy_home(request):
     ).order_by('-created_at')
 
     my_products = Product.objects.filter(uploaded_by=deliveryboy).order_by('-id')[:10]
+    my_blogs = Blogs.objects.filter(authname=request.user.username).order_by('-timeStamp')[:10]
 
     context = {
         'deliveryboy': deliveryboy,
@@ -1013,6 +1014,7 @@ def deliveryboy_home(request):
         'my_deliveries': my_deliveries,
         'my_returns': my_returns,
         'my_products': my_products,
+        'my_blogs': my_blogs,
     }
 
     return render(request, 'deliveryboy_home.html', context)
@@ -1030,7 +1032,11 @@ def deliveryboy_add_product(request):
             product.uploaded_by = request.user.deliveryboy
             if not product.piece:
                 product.piece = product.stock
-            product.save()
+            try:
+                product.save()
+            except Exception as exc:
+                messages.error(request, f"Product upload failed: {exc}")
+                return render(request, 'deliveryboy_add_product.html', {'form': form})
             messages.success(request, "Product added successfully.")
             return redirect('deliveryboy_home')
     else:
@@ -1049,7 +1055,11 @@ def deliveryboy_add_blog(request):
         if form.is_valid():
             blog = form.save(commit=False)
             blog.authname = request.user.username
-            blog.save()
+            try:
+                blog.save()
+            except Exception as exc:
+                messages.error(request, f"Blog upload failed: {exc}")
+                return render(request, 'deliveryboy_add_blog.html', {'form': form})
             messages.success(request, "Blog post added successfully.")
             return redirect('handleBlog')
     else:

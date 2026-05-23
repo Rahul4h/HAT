@@ -68,7 +68,9 @@
                 <div class="col">
                     <div class="card h-100 shadow-sm border-0 blog-card rounded-4">
                         <a href="{% url 'blog_detail' post.id %}">
+                            {% if post.img %}
                             <img src="{{ post.img.url }}" class="card-img-top blog-img" alt="{{ post.title }}">
+                            {% endif %}
                         </a>
                         <div class="card-body">
                             <h5 class="blog-title">

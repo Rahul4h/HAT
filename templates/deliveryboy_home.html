@@ -44,6 +44,32 @@
     </div>
   </div>
 
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-info text-dark">
+      <strong>My Blog Posts</strong>
+    </div>
+    <div class="card-body">
+      {% if my_blogs %}
+        <div class="row g-3">
+          {% for blog in my_blogs %}
+            <div class="col-md-6 col-lg-4">
+              <div class="border rounded p-3 h-100">
+                {% if blog.img %}
+                  <img src="{{ blog.img.url }}" alt="{{ blog.title }}" class="img-thumbnail mb-2" style="height: 120px; width: 100%; object-fit: cover;">
+                {% endif %}
+                <h6 class="mb-1">{{ blog.title }}</h6>
+                <p class="mb-1">{{ blog.description|truncatechars:80 }}</p>
+                <a href="{% url 'blog_detail' blog.id %}" class="btn btn-sm btn-outline-primary">View Blog</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="mb-0">You have not written any blog posts yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
   <!-- My Assigned Deliveries Section -->
   <div class="card shadow-sm mb-4">
     <div class="card-header bg-success text-white">
