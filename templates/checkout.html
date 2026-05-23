@@ -35,11 +35,11 @@
                  id="quantity"
                  value="{{ quantity }}" 
                  min="1" 
-                 max="{{ product.stock }}" 
+                 max="{{ available_quantity }}" 
                  class="form-control mb-3" 
                  required
                >
-               <small class="text-muted">Only {{ product.stock }} left in stock.</small>
+               <small class="text-muted">Only {{ available_quantity }} left in stock.</small>
 
                 <input type="hidden" name="amount" value="{{ total }}">
 

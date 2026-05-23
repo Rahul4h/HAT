@@ -12,8 +12,8 @@
                 ৳{{ product.sale_price }} 
                 <del class="text-muted">৳{{ product.original_price }}</del>
             </p>
-            <p><strong>Pieces Imported:</strong> {{ product.piece }}</p>
-            <p><strong>In Stock:</strong> {{ product.stock }}</p>
+            <p><strong>Available Pieces:</strong> {{ product.piece }}</p>
+            <p><strong>In Stock:</strong> {{ available_quantity }}</p>
 
 
             <!-- ✅ Add to Cart Form -->
@@ -21,7 +21,7 @@
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="quantity" class="form-label">Quantity:</label>
-                    <input type="number" name="quantity" id="quantity" min="1" max="{{ product.piece }}" value="1" class="form-control" style="width: 100px;">
+                    <input type="number" name="quantity" id="quantity" min="1" max="{{ available_quantity }}" value="1" class="form-control" style="width: 100px;">
                 </div>
                 <button type="submit" class="btn btn-success">Add to Cart 🛒</button>
             </form>

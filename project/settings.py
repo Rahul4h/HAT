@@ -224,7 +224,15 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
 }
 
-USE_CLOUDINARY = env_bool("USE_CLOUDINARY", bool(os.environ.get("CLOUDINARY_URL")))
+has_cloudinary_credentials = bool(
+    os.environ.get("CLOUDINARY_URL")
+    or (
+        os.environ.get("CLOUDINARY_CLOUD_NAME")
+        and os.environ.get("CLOUDINARY_API_KEY")
+        and os.environ.get("CLOUDINARY_API_SECRET")
+    )
+)
+USE_CLOUDINARY = env_bool("USE_CLOUDINARY", has_cloudinary_credentials)
 
 STORAGES = {
     "default": {

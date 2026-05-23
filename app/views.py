@@ -16,6 +16,7 @@ import requests
 from django.http import JsonResponse,HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.db import transaction
 from django.db.models import Q,F, ExpressionWrapper, FloatField, Max
 from django.forms import modelform_factory,inlineformset_factory
 from django.utils import timezone
@@ -322,6 +323,7 @@ def product_detail(request, id):
         'comments': comments,
         'form': form,
         'can_comment': can_comment,
+        'available_quantity': _available_quantity(product),
     }
     return render(request, 'product_detail.html', context)
 
@@ -396,9 +398,43 @@ from .forms import ShippingAddressForm
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+
+def _available_quantity(product):
+    quantities = [product.stock]
+    if product.piece is not None and product.piece > 0:
+        quantities.append(product.piece)
+    return min(quantities)
+
+
+def _reserve_product_quantity(product, quantity):
+    available_quantity = _available_quantity(product)
+    if available_quantity < quantity:
+        return False, available_quantity
+
+    product.stock = max(product.stock - quantity, 0)
+    if product.piece is not None and product.piece > 0:
+        product.piece = max(product.piece - quantity, 0)
+    product.save(update_fields=['stock', 'piece'])
+    return True, available_quantity
+
+
+def _restore_product_quantity(product, quantity):
+    product.stock += quantity
+    product.piece += quantity
+    product.save(update_fields=['stock', 'piece'])
+
+
+def _send_mail_safely(*args, **kwargs):
+    kwargs.setdefault('fail_silently', True)
+    try:
+        send_mail(*args, **kwargs)
+    except Exception:
+        pass
+
 @login_required
 def checkout(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+    available_quantity = _available_quantity(product)
     quantity = int(request.POST.get('quantity', 1))
     delivery_fee = 30
     subtotal = product.sale_price * quantity
@@ -409,8 +445,8 @@ def checkout(request, product_id):
         payment_method = request.POST.get('payment_method')
 
         if form.is_valid() and payment_method in ['stripe', 'cod']:
-            if product.stock < quantity:
-                messages.error(request, f"Sorry, only {product.stock} item(s) left in stock.")
+            if available_quantity < quantity:
+                messages.error(request, f"Sorry, only {available_quantity} item(s) left in stock.")
                 return redirect('checkout', product_id=product.id)
 
             shipping = form.save(commit=False)
@@ -441,23 +477,34 @@ def checkout(request, product_id):
                 return JsonResponse({'session_url': session.url})
 
             # Cash on Delivery processing
-            order = Order.objects.create(
-                user=request.user,
-                shipping_address=shipping,
-                address=shipping.address,
-                payment_method='cod',
-                total=total
-            )
-            OrderItem.objects.create(order=order, product=product, quantity=quantity)
-            product.stock -= quantity
-            product.save()
+            with transaction.atomic():
+                product = Product.objects.select_for_update().get(id=product.id)
+                reserved, available_quantity = _reserve_product_quantity(product, quantity)
+                if not reserved:
+                    messages.error(request, f"Sorry, only {available_quantity} item(s) left in stock.")
+                    return redirect('checkout', product_id=product.id)
 
-            send_mail(
+                order = Order.objects.create(
+                    user=request.user,
+                    shipping_address=shipping,
+                    address=shipping.address,
+                    payment_method='cod',
+                    total=total
+                )
+                OrderItem.objects.create(order=order, product=product, quantity=quantity)
+                DeliveryOrder.objects.create(
+                    order=order,
+                    user=request.user,
+                    address=shipping.address,
+                    total=float(total),
+                    payment_method='Cash on Delivery',
+                )
+
+            _send_mail_safely(
                 subject="Your Order Confirmation",
                 message=f"Thank you for your order #{order.id}!\n\nProduct: {product.title}\nQuantity: {quantity}\nTotal: ৳{total}",
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[request.user.email],
-                fail_silently=False,
             )
 
             return render(request, 'order_confirmation.html', {
@@ -479,7 +526,8 @@ def checkout(request, product_id):
         'subtotal': subtotal,
         'delivery_fee': delivery_fee,
         'total': total,
-        'form': form
+        'form': form,
+        'available_quantity': available_quantity,
     }
     return render(request, 'checkout.html', context)
 
@@ -496,27 +544,39 @@ def stripe_success(request):
     total = subtotal + delivery_fee
 
     # Confirm stock again (very important!)
-    if product.stock < quantity:
+    available_quantity = _available_quantity(product)
+    if available_quantity < quantity:
         messages.error(request, f"Sorry, the product is out of stock.")
         return redirect('checkout', product_id=product.id)
 
-    order = Order.objects.create(
-        user=request.user,
-        shipping_address=shipping,
-        address=shipping.address,
-        payment_method='stripe',
-        total=total
-    )
-    OrderItem.objects.create(order=order, product=product, quantity=quantity)
-    product.stock -= quantity
-    product.save()
+    with transaction.atomic():
+        product = Product.objects.select_for_update().get(id=product.id)
+        reserved, available_quantity = _reserve_product_quantity(product, quantity)
+        if not reserved:
+            messages.error(request, f"Sorry, only {available_quantity} item(s) left in stock.")
+            return redirect('checkout', product_id=product.id)
 
-    send_mail(
+        order = Order.objects.create(
+            user=request.user,
+            shipping_address=shipping,
+            address=shipping.address,
+            payment_method='stripe',
+            total=total
+        )
+        OrderItem.objects.create(order=order, product=product, quantity=quantity)
+        DeliveryOrder.objects.create(
+            order=order,
+            user=request.user,
+            address=shipping.address,
+            total=float(total),
+            payment_method='Stripe',
+        )
+
+    _send_mail_safely(
         subject="Your Stripe Order Confirmation",
         message=f"Thanks for paying via Stripe!\n\nOrder #{order.id}\nProduct: {product.title}\nQuantity: {quantity}\nTotal: ৳{total}",
         from_email=settings.EMAIL_HOST_USER,
         recipient_list=[request.user.email],
-        fail_silently=False,
     )
 
     return render(request, 'order_confirmation.html', {
@@ -664,8 +724,7 @@ def cancel_order(request, order_id):
     # Restore stock
     for item in order_items:
         product = item.product
-        product.stock += item.quantity
-        product.save()
+        _restore_product_quantity(product, item.quantity)
         item.delete()  # Delete each order item
 
     # Delete the order itself if needed
@@ -808,12 +867,11 @@ def update_order_success(request):
     order.payment_method = 'stripe'
     order.save()
 
-    send_mail(
+    _send_mail_safely(
         subject="Your Updated Stripe Order Confirmation",
         message=f"Thanks! Order #{order.id} updated and paid successfully.\nTotal: ৳{order.total}",
         from_email=settings.EMAIL_HOST_USER,
         recipient_list=[request.user.email],
-        fail_silently=False,
     )
 
     messages.success(request, "Order updated and paid via Stripe.")
