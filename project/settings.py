@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'cloudinary_storage',
     'cloudinary',
+    'channels'
     'app',
     'allauth',
     'allauth.account',
