@@ -32,7 +32,7 @@ def env_bool(name: str, default: bool = False) -> bool:
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get(
     "SECRET_KEY",
-    "django-insecure-_#tq1cj2i(k)z5!bmku0bb_+ae*a&fl^xjiuvne(#lq1=5a!%y",
+    ""
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -79,7 +79,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'cloudinary_storage',
     'cloudinary',
-    'channels'
+    
     'app',
     'allauth',
     'allauth.account',
@@ -146,7 +146,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'project.wsgi.application'
-ASGI_APPLICATION = 'project.asgi.application'
+
 
 
 # Database
@@ -257,21 +257,6 @@ MESSAGE_TAGS={
     messages.ERROR:'danger'
 }
 
-REDIS_URL = os.environ.get("REDIS_URL", "")
-
-if REDIS_URL:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {"hosts": [REDIS_URL]},
-        }
-    }
-else:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels.layers.InMemoryChannelLayer",
-        }
-    }
 
 
 # Stripe API Keys
