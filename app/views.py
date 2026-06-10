@@ -479,7 +479,11 @@ def _create_delivery_order(order, product, shipping):
 def checkout(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     available_quantity = _available_quantity(product)
-    quantity = int(request.POST.get('quantity', 1))
+    try:
+        quantity = int(request.POST.get('quantity', 1))
+    except (TypeError, ValueError):
+        quantity = 1
+    quantity = max(quantity, 1)
     delivery_fee = 30
     subtotal = product.sale_price * quantity
     total = subtotal + delivery_fee
@@ -552,8 +556,11 @@ def checkout(request, product_id):
                 'payment_method': 'cod',
                 'shipping': shipping,
                 'message': "✅ Your order has been placed with Cash on Delivery!",
-                'order_id': order.id
+                'order_id': order.id,
+                'order': order,
             })
+
+        messages.error(request, "Please correct the checkout form and try again.")
 
     else:
         form = ShippingAddressForm()
@@ -618,7 +625,8 @@ def stripe_success(request):
         'payment_method': 'stripe',
         'shipping': shipping,
         'message': "✅ Your payment was successful via Stripe!",
-        'order_id': order.id
+        'order_id': order.id,
+        'order': order,
     })
 
 @login_required
