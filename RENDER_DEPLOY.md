@@ -23,8 +23,6 @@ DATABASE_URL=<Render Postgres internal connection string>
 DJANGO_SUPERUSER_USERNAME=admin
 DJANGO_SUPERUSER_EMAIL=your-email@example.com
 DJANGO_SUPERUSER_PASSWORD=your-strong-password
-USE_CLOUDINARY=True
-CLOUDINARY_URL=cloudinary://API_KEY:API_SECRET@CLOUD_NAME
 ```
 
 The deploy command runs migrations and creates/updates the superuser
@@ -33,9 +31,27 @@ automatically, so you do not need Render Shell for that.
 ## Cloudinary media uploads
 
 Uploaded product, blog, order, and return images use Cloudinary when
-`USE_CLOUDINARY=True` and `CLOUDINARY_URL` is set. Existing files that were
+`CLOUDINARY_URL` is set. Existing files that were
 previously saved in Render's local `media/` folder must be re-uploaded or
 migrated to Cloudinary, because changing storage does not copy old files.
+
+Optional Cloudinary variable:
+
+```env
+CLOUDINARY_URL=cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+```
+
+## Payment variables
+
+Set payment credentials in Render, not in source code:
+
+```env
+STRIPE_PUBLIC_KEY=<your-stripe-public-key>
+STRIPE_SECRET_KEY=<your-stripe-secret-key>
+SSLCOMMERZ_STORE_ID=<your-sslcommerz-store-id>
+SSLCOMMERZ_STORE_PASSWORD=<your-sslcommerz-store-password>
+SSLCOMMERZ_API_URL=https://sandbox.sslcommerz.com/gwprocess/v4/api.php
+```
 
 ## Important free-tier note
 

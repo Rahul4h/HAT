@@ -630,6 +630,9 @@ def stripe_cancel(request):
 
 def initiate_sslcommerz_payment(request):
     if request.method == 'POST':
+        if not settings.SSLCOMMERZ_STORE_ID or not settings.SSLCOMMERZ_STORE_PASSWORD:
+            return JsonResponse({'error': 'SSLCommerz credentials are not configured.'}, status=503)
+
         amount = request.POST.get('amount')
         product_id = request.POST.get('product_id')
 
@@ -637,8 +640,8 @@ def initiate_sslcommerz_payment(request):
             return JsonResponse({'error': 'Missing required fields'}, status=400)
         
         data = {
-            'store_id': 'mysho685f94ce8b5f7',
-            'store_passwd': 'mysho685f94ce8b5f7@ssl',
+            'store_id': settings.SSLCOMMERZ_STORE_ID,
+            'store_passwd': settings.SSLCOMMERZ_STORE_PASSWORD,
             'total_amount': amount,
             'currency': 'BDT',
             'tran_id': 'TEST12345',
@@ -665,10 +668,8 @@ def initiate_sslcommerz_payment(request):
      
 
         try:
-            response = requests.post('https://sandbox.sslcommerz.com/gwprocess/v4/api.php', data=data)
+            response = requests.post(settings.SSLCOMMERZ_API_URL, data=data, timeout=20)
             response_data = response.json()
-
-            print("🔁 SSLCommerz Response:", response_data)
 
             if 'GatewayPageURL' in response_data:
                 return JsonResponse({'GatewayPageURL': response_data['GatewayPageURL']})
@@ -676,7 +677,6 @@ def initiate_sslcommerz_payment(request):
                 return JsonResponse({'error': 'SSLCommerz response invalid', 'details': response_data}, status=500)
 
         except Exception as e:
-            print("💥 Exception:", str(e))
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)

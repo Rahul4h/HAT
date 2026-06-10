@@ -28,8 +28,6 @@ services:
         fromDatabase:
           name: hat-postgres
           property: connectionString
-      - key: USE_CLOUDINARY
-        value: "True"
       - key: CLOUDINARY_URL
         sync: false
       - key: CLOUDINARY_CLOUD_NAME
@@ -60,6 +58,12 @@ services:
         sync: false
       - key: STRIPE_SECRET_KEY
         sync: false
+      - key: SSLCOMMERZ_STORE_ID
+        sync: false
+      - key: SSLCOMMERZ_STORE_PASSWORD
+        sync: false
+      - key: SSLCOMMERZ_API_URL
+        value: https://sandbox.sslcommerz.com/gwprocess/v4/api.php
 
 databases:
   - name: hat-postgres
