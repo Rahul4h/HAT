@@ -21,7 +21,7 @@ from django.db.models import Q,F, ExpressionWrapper, FloatField, Max, Value, Cas
 from django.forms import modelform_factory,inlineformset_factory
 from django.utils import timezone
 
-
+import traceback
   
 
 
@@ -240,9 +240,11 @@ def handlesignup(request):
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
             messages.success(request, "Please check your email to activate your account.")
         except Exception as e:
-            messages.error(request, "Error sending activation email. Please try again.")
-            user.delete()  # Clean up created user
-            return redirect('handlesignup')
+          print("EMAIL ERROR:", str(e))
+          print(traceback.format_exc())   # 🔥 এটা add করো
+          messages.error(request, f"Email error: {e}")
+          user.delete()
+          return redirect('handlesignup')
 
         return redirect('handlelogin')
     

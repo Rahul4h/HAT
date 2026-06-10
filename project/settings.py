@@ -11,10 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 from pathlib import Path
 import os
-from urllib.parse import urlparse
 
 import dj_database_url
-import cloudinary
 from dotenv import load_dotenv
 from django.contrib.messages import constants as messages
 
@@ -32,9 +30,10 @@ def env_bool(name: str, default: bool = False) -> bool:
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", "")
-if not SECRET_KEY:
-    raise RuntimeError("SECRET_KEY environment variable is required.")
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    ""
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool("DEBUG", True)
@@ -154,22 +153,16 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
-if DATABASE_URL:
-    DATABASES = {
-        "default": dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+DATABASES = {
+    "default": dj_database_url.config(
+        default=os.environ.get(
+            "DATABASE_URL",
+            
+        ),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -212,6 +205,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = os.environ.get(
     "DEFAULT_FROM_EMAIL",
     f"Rahul from HAT <{EMAIL_HOST_USER}>",
+    
 )
 
 
@@ -220,47 +214,19 @@ DEFAULT_FROM_EMAIL = os.environ.get(
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS =[os.path.join(BASE_DIR,'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 
-cloudinary_url = os.environ.get("CLOUDINARY_URL", "")
-cloudinary_from_url = {}
-if cloudinary_url:
-    parsed_cloudinary_url = urlparse(cloudinary_url)
-    cloudinary_from_url = {
-        "CLOUD_NAME": parsed_cloudinary_url.hostname,
-        "API_KEY": parsed_cloudinary_url.username,
-        "API_SECRET": parsed_cloudinary_url.password,
-    }
 
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME") or cloudinary_from_url.get("CLOUD_NAME"),
-    "API_KEY": os.environ.get("CLOUDINARY_API_KEY") or cloudinary_from_url.get("API_KEY"),
-    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET") or cloudinary_from_url.get("API_SECRET"),
-}
-
-cloudinary.config(
-    cloud_name=CLOUDINARY_STORAGE["CLOUD_NAME"],
-    api_key=CLOUDINARY_STORAGE["API_KEY"],
-    api_secret=CLOUDINARY_STORAGE["API_SECRET"],
-    secure=True,
-)
 
 has_cloudinary_credentials = bool(
-    CLOUDINARY_STORAGE["CLOUD_NAME"]
-    and CLOUDINARY_STORAGE["API_KEY"]
-    and CLOUDINARY_STORAGE["API_SECRET"]
+    os.environ.get("CLOUDINARY_URL")
+    
 )
-USE_CLOUDINARY = env_bool("USE_CLOUDINARY", has_cloudinary_credentials)
-if USE_CLOUDINARY and not has_cloudinary_credentials:
-    raise RuntimeError(
-        "USE_CLOUDINARY=True but Cloudinary credentials are missing. "
-        "Set CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET."
-    )
+USE_CLOUDINARY = env_bool("USE_CLOUDINARY", has_cloudinary_credentials) and has_cloudinary_credentials
 
 STORAGES = {
     "default": {
@@ -296,10 +262,4 @@ STRIPE_SECRET_KEY = os.environ.get(
     "",
 )
 
-SSLCOMMERZ_STORE_ID = os.environ.get("SSLCOMMERZ_STORE_ID", "")
-SSLCOMMERZ_STORE_PASSWORD = os.environ.get("SSLCOMMERZ_STORE_PASSWORD", "")
-SSLCOMMERZ_API_URL = os.environ.get(
-    "SSLCOMMERZ_API_URL",
-    "https://sandbox.sslcommerz.com/gwprocess/v4/api.php",
-)
 
