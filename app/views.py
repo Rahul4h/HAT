@@ -190,7 +190,7 @@ def handlelogin(request):
 
 
 from django.conf import settings
-from django.core.mail import send_mail
+from app.utils.email import send_email
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
@@ -237,7 +237,11 @@ def handlesignup(request):
         })
 
         try:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+            send_email(
+               subject=subject,
+               html_content=message,
+               to_email=email
+            )
             messages.success(request, "Please check your email to activate your account.")
         except Exception as e:
           print("EMAIL ERROR:", str(e))
