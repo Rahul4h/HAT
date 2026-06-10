@@ -823,7 +823,7 @@ def update_order(request, order_id):
     )
     ShippingForm = modelform_factory(ShippingAddress, fields=('address', 'phone'))
 
-    shipping_instance = ShippingAddress.objects.filter(order=order).first()
+    shipping_instance = order.shipping_address
 
     if request.method == 'POST':
         formset = OrderItemFormSet(request.POST, instance=order)
@@ -844,7 +844,6 @@ def update_order(request, order_id):
             # Save shipping address
             shipping_address = shipping_form.save(commit=False)
             shipping_address.user = request.user
-            shipping_address.order = order
             shipping_address.save()
 
             order.shipping_address = shipping_address

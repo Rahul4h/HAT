@@ -11,8 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 from pathlib import Path
 import os
+from urllib.parse import urlparse
 
 import dj_database_url
+import cloudinary
 from dotenv import load_dotenv
 from django.contrib.messages import constants as messages
 
@@ -30,10 +32,9 @@ def env_bool(name: str, default: bool = False) -> bool:
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY",
-    ""
-)
+SECRET_KEY = os.environ.get("SECRET_KEY", "")
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY environment variable is required.")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool("DEBUG", True)
@@ -213,27 +214,47 @@ DEFAULT_FROM_EMAIL = os.environ.get(
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 STATIC_URL = '/static/'
-STATICFILES_DIRS =[os.path.join(BASE_DIR,'static')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 
+cloudinary_url = os.environ.get("CLOUDINARY_URL", "")
+cloudinary_from_url = {}
+if cloudinary_url:
+    parsed_cloudinary_url = urlparse(cloudinary_url)
+    cloudinary_from_url = {
+        "CLOUD_NAME": parsed_cloudinary_url.hostname,
+        "API_KEY": parsed_cloudinary_url.username,
+        "API_SECRET": parsed_cloudinary_url.password,
+    }
+
 CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
-    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME") or cloudinary_from_url.get("CLOUD_NAME"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY") or cloudinary_from_url.get("API_KEY"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET") or cloudinary_from_url.get("API_SECRET"),
 }
 
-has_cloudinary_credentials = bool(
-    os.environ.get("CLOUDINARY_URL")
-    or (
-        os.environ.get("CLOUDINARY_CLOUD_NAME")
-        and os.environ.get("CLOUDINARY_API_KEY")
-        and os.environ.get("CLOUDINARY_API_SECRET")
-    )
+cloudinary.config(
+    cloud_name=CLOUDINARY_STORAGE["CLOUD_NAME"],
+    api_key=CLOUDINARY_STORAGE["API_KEY"],
+    api_secret=CLOUDINARY_STORAGE["API_SECRET"],
+    secure=True,
 )
-USE_CLOUDINARY = env_bool("USE_CLOUDINARY", has_cloudinary_credentials) and has_cloudinary_credentials
+
+has_cloudinary_credentials = bool(
+    CLOUDINARY_STORAGE["CLOUD_NAME"]
+    and CLOUDINARY_STORAGE["API_KEY"]
+    and CLOUDINARY_STORAGE["API_SECRET"]
+)
+USE_CLOUDINARY = env_bool("USE_CLOUDINARY", has_cloudinary_credentials)
+if USE_CLOUDINARY and not has_cloudinary_credentials:
+    raise RuntimeError(
+        "USE_CLOUDINARY=True but Cloudinary credentials are missing. "
+        "Set CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET."
+    )
 
 STORAGES = {
     "default": {
