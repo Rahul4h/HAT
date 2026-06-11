@@ -237,16 +237,18 @@ def handlesignup(request):
         })
 
         try:
-            send_email(
-               subject=subject,
-               html_content=message,
-               to_email=email
+          send_email(
+             subject=subject,
+             html_content=message,
+             to_email=email
             )
-            messages.success(request, "Please check your email to activate your account.")
+          messages.success(request, "Please check your email to activate your account.")
+
         except Exception as e:
           print("EMAIL ERROR:", str(e))
-          print(traceback.format_exc())   # 🔥 এটা add করো
-          messages.error(request, f"Email error: {e}")
+          print(traceback.format_exc())
+          messages.error(request, "Email sending failed. Try again later.")
+
           user.delete()
           return redirect('handlesignup')
 

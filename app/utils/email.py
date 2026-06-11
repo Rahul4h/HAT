@@ -1,17 +1,12 @@
-import resend
-import os
-
-resend.api_key = os.environ.get("RESEND_API_KEY")
-
+from django.core.mail import EmailMessage
+from django.conf import settings
 
 def send_email(subject, html_content, to_email):
-    try:
-        resend.Emails.send({
-            "from": "HAT <onboarding@resend.dev>",
-            "to": to_email,
-            "subject": subject,
-            "html": html_content,
-        })
-    except Exception as e:
-        print("EMAIL ERROR:", e)
-        raise e
+    email = EmailMessage(
+        subject=subject,
+        body=html_content,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[to_email],
+    )
+    email.content_subtype = "html"
+    email.send(fail_silently=False)
