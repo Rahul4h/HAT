@@ -51,7 +51,7 @@ CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in os.environ.get(
         "CSRF_TRUSTED_ORIGINS",
-        "https://*.onrender.com,https://127.0.0.1:8000,https://localhost:8000",
+        "https://*.onrender.com,https://hat-bd.com,https://www.hat-bd.com,http://127.0.0.1:8000,http://localhost:8000",
     ).split(",")
     if origin.strip()
 ]
