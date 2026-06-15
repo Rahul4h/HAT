@@ -42,7 +42,7 @@ ALLOWED_HOSTS = [
     host.strip()
     for host in os.environ.get(
         "ALLOWED_HOSTS",
-        "127.0.0.1,localhost,.onrender.com,hat-t52a.onrender.com",
+        "127.0.0.1,localhost,.onrender.com,hat-t52a.onrender.com,hat-bd.com,www.hat-bd.com",
     ).split(",")
     if host.strip()
 ]
