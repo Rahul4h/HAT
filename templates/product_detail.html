@@ -35,26 +35,15 @@
 
               <div class="card mt-4 shadow-sm">
 
-              <img src="{{ post.img.url }}"
-              class="card-img-top"
-              style="height:200px;object-fit:cover;">
+              
 
 
              <div class="card-body">
 
-             <h5>
-             {{ post.title }}
-            </h5>
-
-            <p>
-            {{ post.description|truncatewords:20 }}
-           </p>
-
-
            <a href="{% url 'blog_detail' post.id %}"
            class="btn btn-outline-primary">
 
-           Read Article →
+           Read Detail blog →
 
             </a>
 
