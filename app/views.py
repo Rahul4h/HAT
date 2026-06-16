@@ -332,6 +332,8 @@ def product_detail(request, id):
     comments = Comment.objects.filter(product=product, parent=None).order_by('-created_at')  # Only parent comments
 
     can_comment = True  # You can modify this to check if user purchased the product
+    
+    related_blog = product.blogs.first()
 
     if request.method == 'POST':
         form = CommentForm(request.POST)
@@ -348,6 +350,7 @@ def product_detail(request, id):
             return redirect('product_detail', id=product.id)
     else:
         form = CommentForm()
+    
 
     context = {
         'product': product,
@@ -355,6 +358,7 @@ def product_detail(request, id):
         'form': form,
         'can_comment': can_comment,
         'available_quantity': _available_quantity(product),
+        'post':related_blog,
     }
     return render(request, 'product_detail.html', context)
 
@@ -579,8 +583,8 @@ def checkout(request, product_id):
                 'order_id': order.id,
                 'order': order,
             })
-
-        messages.error(request, "Please correct the checkout form and try again.")
+        else:
+         messages.error(request, "Please correct the checkout form and try again.")
 
     else:
         form = ShippingAddressForm()

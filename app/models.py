@@ -42,6 +42,13 @@ class Blogs(models.Model):
     authname = models.CharField(max_length=50,db_index=True)
     timeStamp = models.DateTimeField(auto_now_add=True, db_index=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='shirt', db_index=True)
+    product = models.ForeignKey(
+        'Product',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='blogs'
+    )
 
     def __str__(self):
         return self.title
