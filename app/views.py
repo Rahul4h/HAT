@@ -22,7 +22,8 @@ from django.forms import modelform_factory,inlineformset_factory
 from django.utils import timezone
 
 import traceback
-  
+
+from app.utils.email import send_email
 
 
 
@@ -325,7 +326,7 @@ def search(request):
 #def service(request):
    # return render(request, 'service.html')
 
-@login_required
+
 def product_detail(request, id):
     product = get_object_or_404(Product, id=id)
     comments = Comment.objects.filter(product=product, parent=None).order_by('-created_at')  # Only parent comments
@@ -549,13 +550,24 @@ def checkout(request, product_id):
                 )
                 OrderItem.objects.create(order=order, product=product, quantity=quantity)
                 _create_delivery_order(order, product, shipping)
-
-            _send_mail_safely(
-                subject="Your Order Confirmation",
-                message=f"Thank you for your order #{order.id}!\n\nProduct: {product.title}\nQuantity: {quantity}\nTotal: ৳{total}",
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[request.user.email],
+            
+            html_content = render_to_string(
+                 "order_email.html",
+                  {
+                  "order": order,
+                  "product": product,
+                  "quantity": quantity,
+                  "total": total,
+                  }
+               )
+            try:
+             send_email(
+             subject=f"Order Confirmation #{order.id}",
+             html_content=html_content,
+             to_email=request.user.email,
             )
+            except Exception as e:
+             print("ORDER EMAIL ERROR:", str(e))
 
             return render(request, 'order_confirmation.html', {
                 'product': product,
