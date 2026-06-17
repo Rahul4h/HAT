@@ -446,7 +446,7 @@ def _reserve_product_quantity(product, quantity):
     if available_quantity < quantity:
         return False, available_quantity
 
-    product.stock = max(product.stock - quantity, 0)
+    product.stock = max(product.stock, 0)
     if product.piece is not None and product.piece > 0:
         product.piece = max(product.piece - quantity, 0)
     product.save(update_fields=['stock', 'piece'])
@@ -454,7 +454,7 @@ def _reserve_product_quantity(product, quantity):
 
 
 def _restore_product_quantity(product, quantity):
-    product.stock += quantity
+    product.stock += 0
     product.piece += quantity
     product.save(update_fields=['stock', 'piece'])
 
@@ -1117,6 +1117,7 @@ def deliveryboy_add_blog(request):
             blog.authname = request.user.username
 
             try:
+              with transaction.atomic():
                 blog.save()
 
 
