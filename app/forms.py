@@ -1,5 +1,5 @@
 from django import forms
-from .models import Comment,ShippingAddress,Product,Blogs
+from .models import Comment,ShippingAddress,Product,Blogs,BlogImage
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -61,10 +61,24 @@ class ProductForm(forms.ModelForm):
 class BlogForm(forms.ModelForm):
     class Meta:
         model = Blogs
-        fields = ['title', 'description', 'img', 'category']
+        fields = ['title', 'description', 'img', 'category', 'product']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
             'img': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
+            'product': forms.Select(attrs={'class': 'form-select' }),
         }
+
+class MultipleFileInput(forms.FileInput):
+    allow_multiple_selected = True
+
+class BlogImageForm(forms.ModelForm):
+    image = forms.FileField(
+        widget=MultipleFileInput(attrs={'multiple': True}),
+        required=False
+    )
+
+    class Meta:
+        model = BlogImage
+        fields = ['image']

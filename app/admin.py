@@ -1,5 +1,5 @@
 from django.contrib import admin
-from app.models import Contact,Blogs,Product,Profile,CartItem,Comment,ShippingAddress,Order,OrderItem,ChatMessage, DeliveryBoy,DeliveryOrder,ReturnRequest
+from app.models import Contact,Blogs,Product,Profile,CartItem,Comment,ShippingAddress,Order,OrderItem,ChatMessage, DeliveryBoy,DeliveryOrder,ReturnRequest,BlogImage
 # Register your models here.
 
 admin.site.register(Contact)
@@ -12,6 +12,7 @@ admin.site.register(ShippingAddress)
 admin.site.register(Order)
 admin.site.register(OrderItem)
 admin.site.register(ChatMessage)
+admin.site.register(BlogImage)
 
 @admin.register(DeliveryBoy)
 class DeliveryBoyAdmin(admin.ModelAdmin):

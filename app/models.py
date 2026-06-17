@@ -310,5 +310,26 @@ class Recommendation(models.Model):
 
     def __str__(self):
         return f'Recommendation: {self.user.username} → {self.product.title}'
+    
+
+class BlogImage(models.Model):
+
+    blog = models.ForeignKey(
+        Blogs,
+        on_delete=models.CASCADE,
+        related_name='images'
+    )
+
+    image = models.ImageField(
+        upload_to='blog_images/'
+    )
+
+    uploaded_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+
+    def __str__(self):
+        return self.blog.title
 
   

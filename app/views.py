@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate,login,logout
 
-from .forms import CommentForm,ShippingAddressForm,ProductForm,BlogForm
-from .models import Contact,Blogs,Product,Profile,CartItem,Comment,ShippingAddress,Order,OrderItem,ChatMessage,DeliveryBoy,DeliveryOrder,ReturnRequest,Recommendation
+from .forms import CommentForm,ShippingAddressForm,ProductForm,BlogForm,BlogImageForm
+from .models import Contact,Blogs,Product,Profile,CartItem,Comment,ShippingAddress,Order,OrderItem,ChatMessage,DeliveryBoy,DeliveryOrder,ReturnRequest,Recommendation,BlogImage
 from django.conf import settings
 #from django.core.mail import send_mail
 from django.core import mail
@@ -1076,30 +1076,92 @@ def deliveryboy_add_product(request):
     return render(request, 'deliveryboy_add_product.html', {'form': form})
 
 
+
 @login_required
 def deliveryboy_add_blog(request):
+
     if not hasattr(request.user, 'deliveryboy'):
         return redirect('deliveryboy_login')
 
+
+    products = Product.objects.filter(
+        uploaded_by=request.user.deliveryboy
+    )
+
+
     if request.method == 'POST':
+
         form = BlogForm(request.POST, request.FILES)
+
+        form.fields['product'].queryset = products
+
+
         if form.is_valid():
+
+            # maximum 10 images check
+            images = request.FILES.getlist('images')
+
+            if len(images) > 10:
+                messages.error(
+                    request,
+                    "Maximum 10 images are allowed."
+                )
+                return render(
+                    request,
+                    'deliveryboy_add_blog.html',
+                    {'form': form}
+                )
+
+
             blog = form.save(commit=False)
             blog.authname = request.user.username
+
             try:
                 blog.save()
+
+
+                # save multiple images
+                for img in images:
+                    BlogImage.objects.create(
+                        blog=blog,
+                        image=img
+                    )
+
+
             except Exception as exc:
-                messages.error(request, f"Blog upload failed: {exc}")
-                return render(request, 'deliveryboy_add_blog.html', {'form': form})
-            messages.success(request, "Blog post added successfully.")
+                messages.error(
+                    request,
+                    f"Blog upload failed: {exc}"
+                )
+
+                return render(
+                    request,
+                    'deliveryboy_add_blog.html',
+                    {'form': form}
+                )
+
+
+            messages.success(
+                request,
+                "Blog post added successfully."
+            )
+
             return redirect('handleBlog')
+
+
     else:
+
         form = BlogForm()
 
-    return render(request, 'deliveryboy_add_blog.html', {'form': form})
+        form.fields['product'].queryset = products
 
 
 
+    return render(
+        request,
+        'deliveryboy_add_blog.html',
+        {'form': form}
+    )
 
 
 
