@@ -847,81 +847,313 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 
+@login_required
 def update_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    order = get_object_or_404(
+        Order,
+        id=order_id,
+        user=request.user
+    )
+
 
     OrderItemFormSet = inlineformset_factory(
-        Order, OrderItem, fields=('quantity',), extra=0
+        Order,
+        OrderItem,
+        fields=('quantity',),
+        extra=0
     )
-    ShippingForm = modelform_factory(ShippingAddress, fields=('address', 'phone'))
+
+
+    ShippingForm = modelform_factory(
+        ShippingAddress,
+        fields=('address', 'phone')
+    )
+
 
     shipping_instance = order.shipping_address
 
+
+
     if request.method == 'POST':
-        formset = OrderItemFormSet(request.POST, instance=order)
-        shipping_form = ShippingForm(request.POST, instance=shipping_instance)
+
+        formset = OrderItemFormSet(
+            request.POST,
+            instance=order
+        )
+
+        shipping_form = ShippingForm(
+            request.POST,
+            instance=shipping_instance
+        )
+
+
         payment_method = request.POST.get('payment_method')
 
-        if formset.is_valid() and shipping_form.is_valid() and payment_method in ['stripe', 'cod']:
-            formset.save()
 
-            # Calculate total price
-            total = 0
-            delivery_fee = 30
+
+        if (
+            formset.is_valid()
+            and shipping_form.is_valid()
+            and payment_method in ['stripe','cod']
+        ):
+
+
+
+            # ============================
+            # Store old quantities
+            # ============================
+
+            old_quantities = {}
+
             for item in order.items.all():
-                total += item.product.sale_price * item.quantity
-            total += delivery_fee
-            order.total = total
 
+                old_quantities[item.id] = item.quantity
+
+
+
+            # save new quantities temporarily
+
+            updated_items = formset.save(commit=False)
+
+
+
+            # ============================
+            # Check stock + update piece
+            # ============================
+
+            for item in updated_items:
+
+
+                product = item.product
+
+
+                old_qty = old_quantities.get(
+                    item.id,
+                    0
+                )
+
+
+                new_qty = item.quantity
+
+
+
+                difference = new_qty - old_qty
+
+
+
+                # quantity increased
+                if difference > 0:
+
+
+                    if product.piece < difference:
+
+                        messages.error(
+                            request,
+                            f"{product.title} এর পর্যাপ্ত stock নেই"
+                        )
+
+                        return redirect(
+                            'order_list'
+                        )
+
+
+                    product.piece -= difference
+
+
+
+                # quantity decreased
+                elif difference < 0:
+
+
+                    product.piece += abs(
+                        difference
+                    )
+
+
+
+                product.save()
+
+                item.save()
+
+
+
+            # ============================
             # Save shipping address
-            shipping_address = shipping_form.save(commit=False)
+            # ============================
+
+
+            shipping_address = shipping_form.save(
+                commit=False
+            )
+
+
             shipping_address.user = request.user
+
             shipping_address.save()
 
+
+
             order.shipping_address = shipping_address
+
             order.address = shipping_address.address
+
             order.payment_method = payment_method
+
+
+
+            # ============================
+            # Recalculate total
+            # ============================
+
+
+            total = 0
+
+            delivery_fee = 30
+
+
+            for item in order.items.all():
+
+                total += (
+                    item.product.sale_price
+                    *
+                    item.quantity
+                )
+
+
+            total += delivery_fee
+
+
+            order.total = total
+
+
             order.save()
 
+
+
+            # ============================
+            # Stripe
+            # ============================
+
+
             if payment_method == 'stripe':
-                # Save order id in session if needed later
-                request.session['update_order_id'] = order.id
 
-                # Create Stripe Checkout session
+
+                request.session[
+                    'update_order_id'
+                ] = order.id
+
+
+
                 session = stripe.checkout.Session.create(
-                    payment_method_types=['card'],
-                    line_items=[
-                        {
-                            'price_data': {
-                                'currency': 'bdt',
-                                'unit_amount': int(total * 100),  # amount in paisa (smallest currency unit)
-                                'product_data': {
-                                    'name': f"Order #{order.id}",
-                                },
-                            },
-                            'quantity': 1,
-                        },
+
+                    payment_method_types=[
+                        'card'
                     ],
+
+
+                    line_items=[
+
+                        {
+
+                        'price_data': {
+
+                            'currency':'bdt',
+
+                            'unit_amount':int(
+                                total * 100
+                            ),
+
+
+                            'product_data':{
+
+                                'name':
+                                f"Order #{order.id}"
+
+                            },
+
+                        },
+
+
+                        'quantity':1,
+
+                        }
+
+                    ],
+
+
                     mode='payment',
-                    success_url=request.build_absolute_uri('/order/update/success/'),
-                    cancel_url=request.build_absolute_uri('/order/update/cancel/'),
+
+
+                    success_url=request.build_absolute_uri(
+                        '/order/update/success/'
+                    ),
+
+
+                    cancel_url=request.build_absolute_uri(
+                        '/order/update/cancel/'
+                    ),
+
                 )
-                return JsonResponse({'session_url': session.url})
 
-            # For Cash on Delivery
-            messages.success(request, "Order updated successfully with Cash on Delivery.")
-            return redirect('order_list')
+
+                return JsonResponse(
+                    {
+                    'session_url':session.url
+                    }
+                )
+
+
+
+            # ============================
+            # COD
+            # ============================
+
+
+            messages.success(
+                request,
+                "Order updated successfully with Cash on Delivery."
+            )
+
+
+            return redirect(
+                'order_list'
+            )
+
+
+
         else:
-            messages.error(request, "Please correct the errors below.")
-    else:
-        formset = OrderItemFormSet(instance=order)
-        shipping_form = ShippingForm(instance=shipping_instance)
 
-    return render(request, 'update_order.html', {
-        'order': order,
-        'formset': formset,
-        'shipping_form': shipping_form,
-    })
+            messages.error(
+                request,
+                "Please correct the errors below."
+            )
+
+
+
+    else:
+
+
+        formset = OrderItemFormSet(
+            instance=order
+        )
+
+
+        shipping_form = ShippingForm(
+            instance=shipping_instance
+        )
+
+
+
+    return render(
+        request,
+        'update_order.html',
+        {
+            'order':order,
+            'formset':formset,
+            'shipping_form':shipping_form,
+        }
+    )
 
 @login_required
 def update_order_success(request):
