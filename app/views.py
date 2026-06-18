@@ -1138,11 +1138,7 @@ def deliveryboy_update_product(request,id):
 
 
 
-    return render(
-        request,
-        'deliveryboy_update_product.html',
-        {'form':form}
-    )
+    return redirect('deliveryboy_home')
 
 @login_required
 def deliveryboy_add_blog(request):
@@ -1305,11 +1301,7 @@ def deliveryboy_update_blog(request,id):
 
 
 
-    return render(
-        request,
-        'deliveryboy_update_blog.html',
-        {'form':form}
-    )
+    return redirect('deliveryboy_home')
 
 
 
