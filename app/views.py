@@ -1075,7 +1075,74 @@ def deliveryboy_add_product(request):
 
     return render(request, 'deliveryboy_add_product.html', {'form': form})
 
+@login_required
+def deliveryboy_delete_product(request,id):
 
+    if not hasattr(request.user,'deliveryboy'):
+        return redirect('deliveryboy_login')
+
+
+    product = get_object_or_404(
+        Product,
+        id=id,
+        uploaded_by=request.user.deliveryboy
+    )
+
+
+    product.delete()
+
+    messages.success(
+        request,
+        "Product deleted successfully"
+    )
+
+    return redirect('deliveryboy_home')
+
+@login_required
+def deliveryboy_update_product(request,id):
+
+    if not hasattr(request.user,'deliveryboy'):
+        return redirect('deliveryboy_login')
+
+
+    product = get_object_or_404(
+        Product,
+        id=id,
+        uploaded_by=request.user.deliveryboy
+    )
+
+
+    if request.method=="POST":
+
+        form = ProductForm(
+            request.POST,
+            request.FILES,
+            instance=product
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Product updated successfully"
+            )
+
+            return redirect('deliveryboy_home')
+
+
+    else:
+
+        form = ProductForm(instance=product)
+
+
+
+    return render(
+        request,
+        'deliveryboy_update_product.html',
+        {'form':form}
+    )
 
 @login_required
 def deliveryboy_add_blog(request):
@@ -1162,6 +1229,86 @@ def deliveryboy_add_blog(request):
         request,
         'deliveryboy_add_blog.html',
         {'form': form}
+    )
+
+@login_required
+def deliveryboy_delete_blog(request,id):
+
+    if not hasattr(request.user,'deliveryboy'):
+        return redirect('deliveryboy_login')
+
+
+    blog = get_object_or_404(
+        Blogs,
+        id=id,
+        authname=request.user.username
+    )
+
+
+    blog.delete()
+
+
+    messages.success(
+        request,
+        "Blog deleted successfully"
+    )
+
+
+    return redirect('handleBlog')
+
+@login_required
+def deliveryboy_update_blog(request,id):
+
+    if not hasattr(request.user,'deliveryboy'):
+        return redirect('deliveryboy_login')
+
+
+    blog = get_object_or_404(
+        Blogs,
+        id=id,
+        authname=request.user.username
+    )
+
+
+    products = Product.objects.filter(
+        uploaded_by=request.user.deliveryboy
+    )
+
+
+    if request.method=="POST":
+
+        form = BlogForm(
+            request.POST,
+            request.FILES,
+            instance=blog
+        )
+
+        form.fields['product'].queryset = products
+
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Blog updated successfully"
+            )
+
+            return redirect('handleBlog')
+
+
+    else:
+
+        form = BlogForm(instance=blog)
+        form.fields['product'].queryset = products
+
+
+
+    return render(
+        request,
+        'deliveryboy_update_blog.html',
+        {'form':form}
     )
 
 

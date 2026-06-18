@@ -33,6 +33,30 @@ urlpatterns = [
    path('deliveryboy/home/', views.deliveryboy_home, name='deliveryboy_home'),
    path('deliveryboy/products/add/', views.deliveryboy_add_product, name='deliveryboy_add_product'),
    path('deliveryboy/blogs/add/', views.deliveryboy_add_blog, name='deliveryboy_add_blog'),
+   path(
+      'deliveryboy/product/update/<int:id>/',
+          views.deliveryboy_update_product,
+         name='deliveryboy_update_product'
+       ),
+   path(
+         'deliveryboy/product/delete/<int:id>/',
+          views.deliveryboy_delete_product,
+          name='deliveryboy_delete_product'
+         ),
+   
+   path(
+          'deliveryboy/blog/update/<int:id>/',
+          views.deliveryboy_update_blog,
+           name='deliveryboy_update_blog'
+           ),
+
+
+   path(
+          'deliveryboy/blog/delete/<int:id>/',
+           views.deliveryboy_delete_blog,
+            name='deliveryboy_delete_blog'
+         ),
+
    path('deliveryboy/signup/', views.deliveryboy_signup, name='deliveryboy_signup'),
    path(
         'deliveryboy/logout/',
