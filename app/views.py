@@ -1709,25 +1709,35 @@ from .models import ReturnRequest
 @require_POST
 @login_required
 def create_return_request(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    order = get_object_or_404(
+        Order,
+        id=order_id,
+        user=request.user
+    )
 
     reason = request.POST.get('reason')
-    image = request.FILES.get('image')
+    video = request.FILES.get('video')
 
-    if not reason or not image:
-        messages.error(request, "Reason and image are required.")
-        return redirect('order_list')
+    delivery_order = order.delivery_info
 
     ReturnRequest.objects.create(
         order=order,
         customer=request.user,
         amount=order.total,
-        status='pending',
-        created_at=timezone.now(),
-        image=image,
+        reason=reason,
+        video=video,
+
+        assigned_to=delivery_order.assigned_to,  # auto assign
+
+        status='assigned'
     )
 
-    messages.success(request, "Return request submitted.")
+    messages.success(
+        request,
+        "Return request submitted successfully."
+    )
+
     return redirect('order_list')
 
 from django.shortcuts import get_object_or_404, redirect

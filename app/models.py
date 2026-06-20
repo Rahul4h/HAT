@@ -254,37 +254,69 @@ class DeliveryOrder(models.Model):
 
 
 class ReturnRequest(models.Model):
-    order        = models.ForeignKey(Order, on_delete=models.CASCADE, db_index=True)
-    customer     = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
-    amount       = models.DecimalField(max_digits=10, decimal_places=2)
-    
-    assigned_to  = models.ForeignKey(DeliveryBoy, null=True, blank=True, on_delete=models.SET_NULL)
-    image = models.ImageField(upload_to='returns/', null=True, blank=True)  # ← Add this line
-    created_at   = models.DateTimeField(auto_now_add=True, db_index=True)
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        db_index=True
+    )
+
+    customer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        db_index=True
+    )
+
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    reason = models.TextField()
+
+    assigned_to = models.ForeignKey(
+        DeliveryBoy,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
+
+    video = models.FileField(
+        upload_to='returns/videos/',
+        null=True,
+        blank=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        db_index=True
+    )
+
     is_collected = models.BooleanField(default=False)
 
-   
-    collected_at = models.DateTimeField(null=True, blank=True)
+    collected_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
     status = models.CharField(
-    max_length=20,
-    choices=[
-        ('pending', 'Pending'),
-        ('assigned', 'Assigned'),
-        ('collected', 'Collected'),
-        ('cancelled', 'Cancelled'),
-    ],
-    default='pending'        )
-
-
+        max_length=20,
+        choices=[
+            ('pending', 'Pending'),
+            ('assigned', 'Assigned'),
+            ('collected', 'Collected'),
+            ('cancelled', 'Cancelled'),
+        ],
+        default='pending'
+    )
 
     def __str__(self):
         return f"Return #{self.id} for Order #{self.order.id}"
-    
+
     class Meta:
-     indexes = [
-        models.Index(fields=['customer', 'status']),
-        models.Index(fields=['status', 'created_at']),
-    ]
+        indexes = [
+            models.Index(fields=['customer', 'status']),
+            models.Index(fields=['status', 'created_at']),
+        ]
     
 from django.db import models
 

@@ -439,29 +439,54 @@ Save Changes
   <!-- My Assigned Returns Section -->
   <div class="card shadow-sm mb-4">
     <div class="card-header bg-warning text-dark">
-      <strong>My Assigned Returns</strong>
+        <strong>My Assigned Returns</strong>
     </div>
-    <div class="card-body">
-      {% if my_returns %}
-        {% for ret in my_returns %}
-          <div class="border-bottom pb-3 mb-3">
-            <p><strong>Return #{{ ret.id }}</strong> | {{ ret.customer.username }} | ৳{{ ret.amount }}</p>
-            <p><strong>Reason:</strong> {{ ret.reason }}</p>
-            {% if ret.image %}
-              <img src="{{ ret.image.url }}" alt="Return Image" class="img-thumbnail" width="150">
-            {% endif %}
-            <form method="post" action="{% url 'mark_return_collected' ret.id %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-outline-warning mt-2">Mark as Collected</button>
-            </form>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>No active return tasks assigned to you.</p>
-      {% endif %}
-    </div>
-  </div>
 
+    <div class="card-body">
+
+        {% if my_returns %}
+
+            {% for ret in my_returns %}
+
+                <div class="border-bottom pb-3 mb-3">
+
+                    <p>
+                        <strong>Return #{{ ret.id }}</strong>
+                        | {{ ret.customer.username }}
+                        | ৳{{ ret.amount }}
+                    </p>
+
+                    <p>
+                        <strong>Reason:</strong>
+                        {{ ret.reason }}
+                    </p>
+
+                    {% if ret.video %}
+                    <video width="250" controls>
+                        <source src="{{ ret.video.url }}">
+                        Your browser does not support video.
+                    </video>
+                    {% endif %}
+
+                    <form method="post"
+                          action="{% url 'mark_return_collected' ret.id %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn btn-outline-warning mt-2">
+                            Mark as Collected
+                        </button>
+                    </form>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+            <p>No active return tasks assigned to you.</p>
+        {% endif %}
+
+    </div>
+</div>
   <!-- Delivery Boy Info -->
   <div class="row">
     <div class="col-md-4">
