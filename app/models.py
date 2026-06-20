@@ -257,7 +257,7 @@ class ReturnRequest(models.Model):
     order        = models.ForeignKey(Order, on_delete=models.CASCADE, db_index=True)
     customer     = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
     amount       = models.DecimalField(max_digits=10, decimal_places=2)
-    status       = models.CharField(max_length=20, default='pending',db_index=True)
+    
     assigned_to  = models.ForeignKey(DeliveryBoy, null=True, blank=True, on_delete=models.SET_NULL)
     image = models.ImageField(upload_to='returns/', null=True, blank=True)  # ← Add this line
     created_at   = models.DateTimeField(auto_now_add=True, db_index=True)

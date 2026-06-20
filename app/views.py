@@ -1605,24 +1605,32 @@ def assign_delivery_task(request):
     return redirect('deliveryboy_home')
 
 
+
 @login_required
 def assign_return_task(request):
-    # Only delivery boys may call this
     if not hasattr(request.user, 'deliveryboy'):
         return redirect('deliveryboy_login')
 
     if request.method == 'POST':
         return_id = request.POST.get('return_id')
-        ret        = get_object_or_404(ReturnRequest, id=return_id, status='pending', assigned_to__isnull=True)
 
-        # Assign it
+        ret = get_object_or_404(
+            ReturnRequest,
+            id=return_id,
+            status='pending',
+            assigned_to__isnull=True
+        )
+
         ret.assigned_to = request.user.deliveryboy
-        ret.status      = 'out_for_return'
+        ret.status = 'assigned'
         ret.save()
 
-        messages.success(request, f'Return request #{ret.id} assigned.')
-    return redirect('deliveryboy_tasks')
+        messages.success(
+            request,
+            f'Return request #{ret.id} assigned successfully.'
+        )
 
+    return redirect('deliveryboy_home')
 
 
 
