@@ -96,6 +96,17 @@ class Product(models.Model):
         related_name='uploaded_products',
     )
 
+    @property
+    def shop_name(self):
+
+        if self.uploaded_by:
+            username = self.uploaded_by.user.username.capitalize()
+            shop_id = self.uploaded_by.id
+
+            return f"HAT's Store #{shop_id}"
+
+        return "HAT Official Store"
+
     def __str__(self):
         return self.title
     class Meta:

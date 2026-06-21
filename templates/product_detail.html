@@ -11,7 +11,52 @@
         </div>
         </div>
         <div class="col-md-6">
-            <h2>{{ product.title }}</h2>
+
+ <h2>{{ product.title }}</h2>
+
+<!-- Seller / Shop Card -->
+{% if product.uploaded_by %}
+<div class="card shadow-sm border-0 mt-3 mb-4">
+    <div class="card-body d-flex align-items-center">
+
+        <div class="me-3">
+            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                 style="width:55px;height:55px;font-size:22px;">
+                🏪
+            </div>
+        </div>
+
+        <div>
+            <h5 class="mb-1">
+                {{ product.uploaded_by.user.username|title }} Store
+            </h5>
+
+            <p class="mb-1 text-muted">
+                Seller ID: SELLER-{{ product.uploaded_by.id }}
+            </p>
+
+            <span class="badge bg-success">
+                Verified Seller
+            </span>
+        </div>
+
+    </div>
+</div>
+{% else %}
+
+<div class="card shadow-sm border-0 mt-3 mb-4">
+    <div class="card-body">
+        <h5>🏪 HAT Official Store</h5>
+        <span class="badge bg-primary">
+            Official
+        </span>
+    </div>
+</div>
+
+{% endif %}
+
+            
+
             <p class="text-danger">
                 ৳{{ product.sale_price }} 
                 <del class="text-muted">৳{{ product.original_price }}</del>
