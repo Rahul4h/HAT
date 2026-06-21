@@ -1722,24 +1722,32 @@ def create_return_request(request, order_id):
         user=request.user
     )
 
+    # ১) অর্ডার eligible কিনা চেক
+    if order.delivery_status != 'delivered':
+        messages.error(request, "Order এখনো delivered হয়নি, return request দেওয়া যাবে না।")
+        return redirect('order_list')
+
+    if order.is_cancelled:
+        messages.error(request, "এই অর্ডারটি cancelled, return request দেওয়া যাবে না।")
+        return redirect('order_list')
+
+    # ২) আগে থেকে return request থাকলে আর নতুন নেওয়া যাবে না
+    if hasattr(order, 'return_request'):
+        messages.error(request, "এই অর্ডারের জন্য আগেই একটা return request আছে।")
+        return redirect('order_list')
+
     reason = request.POST.get('reason')
     video = request.FILES.get('video')
 
-
     if not reason or not video:
-        messages.error(
-            request,
-            "Reason and video are required."
-        )
+        messages.error(request, "Reason এবং video দুটোই দিতে হবে।")
         return redirect('order_list')
 
-
-    # find delivery boy of this order
-    delivery_order = get_object_or_404(
-        DeliveryOrder,
-        order=order
-    )
-
+    # ৩) DeliveryOrder না পেলে 404 না দিয়ে গ্রেসফুলি হ্যান্ডল করা
+    delivery_order = DeliveryOrder.objects.filter(order=order).first()
+    if not delivery_order:
+        messages.error(request, "এই অর্ডারের জন্য কোনো delivery record পাওয়া যায়নি।")
+        return redirect('order_list')
 
     ReturnRequest.objects.create(
         order=order,
@@ -1747,18 +1755,11 @@ def create_return_request(request, order_id):
         amount=order.total,
         reason=reason,
         video=video,
-
         assigned_to=delivery_order.assigned_to,
-
         status='assigned'
     )
 
-
-    messages.success(
-        request,
-        "Return request submitted successfully."
-    )
-
+    messages.success(request, "Return request submitted successfully.")
     return redirect('order_list')
 
 from django.shortcuts import get_object_or_404, redirect
