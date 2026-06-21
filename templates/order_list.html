@@ -99,7 +99,7 @@
                 <form action="{% url 'create_return_request' order.id %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <textarea name="reason" class="form-control mb-2" rows="2" placeholder="Return reason..." required></textarea>
-                    <input type="file" name="image" class="form-control mb-2" required>
+                    <input type="file" name="video" class="form-control mb-2" required>
                     <button type="submit" class="btn btn-sm btn-outline-dark">Submit Return Request</button>
                 </form>
             </div>

@@ -38,12 +38,68 @@ class DeliveryOrderAdmin(admin.ModelAdmin):
 
 
 
+
+
 @admin.register(ReturnRequest)
 class ReturnRequestAdmin(admin.ModelAdmin):
-    list_display = ('id', 'order', 'customer', 'status', 'assigned_to', 'created_at')
-    list_filter = ('status',)
-    search_fields = ('order__id', 'customer__username')
+    list_display = (
+        'id',
+        'order',
+        'customer',
+        'amount',
+        'status',
+        'assigned_to',
+        'created_at',
+        'is_collected',
+    )
 
+    list_filter = (
+        'status',
+        'is_collected',
+        'created_at',
+    )
+
+    search_fields = (
+        'order__id',
+        'customer__username',
+    )
+
+    readonly_fields = (
+        'created_at',
+        'collected_at',
+    )
+
+    fieldsets = (
+        ('Return Information', {
+            'fields': (
+                'order',
+                'customer',
+                'amount',
+                'reason',
+                'video',
+            )
+        }),
+
+        ('Assignment', {
+            'fields': (
+                'assigned_to',
+                'status',
+            )
+        }),
+
+        ('Collection Status', {
+            'fields': (
+                'is_collected',
+                'collected_at',
+            )
+        }),
+
+        ('Timestamps', {
+            'fields': (
+                'created_at',
+            )
+        }),
+    )
 
 
 
