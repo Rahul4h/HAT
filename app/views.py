@@ -1692,17 +1692,9 @@ def confirm_delivery(request, order_id):
 
 
 
-from .models import ReturnRequest
 
-@login_required
-def request_return(request, order_id):
-    if request.method == 'POST':
-        order = get_object_or_404(Order, id=order_id, user=request.user)
-        reason = request.POST.get('reason')
-        image = request.FILES.get('image')
-        ReturnRequest.objects.create(order=order, customer=request.user, amount=order.total, image=image, status='pending')
-        messages.success(request, "Return request submitted.")
-        return redirect('order_list')
+
+
 
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
@@ -1762,6 +1754,7 @@ def create_return_request(request, order_id):
     messages.success(request, "Return request submitted successfully.")
     return redirect('order_list')
 
+from django.utils import timezone
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from .models import ReturnRequest

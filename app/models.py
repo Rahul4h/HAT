@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.validators import RegexValidator
+from django.conf import settings
+from cloudinary_storage.storage import VideoMediaCloudinaryStorage
 
 #from .models import Product
 # Create your models here.
@@ -284,6 +286,7 @@ class ReturnRequest(models.Model):
 
     video = models.FileField(
         upload_to='returns/videos/',
+        storage=VideoMediaCloudinaryStorage() if settings.USE_CLOUDINARY else None,
         null=True,
         blank=True
     )
