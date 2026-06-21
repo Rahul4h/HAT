@@ -80,6 +80,8 @@ urlpatterns = [
    path('checkout/cancel/', views.stripe_cancel, name='stripe_cancel'),
    path('order/update/success/', views.update_order_success, name='update_order_success'),
    path('order/update/cancel/', views.update_order_cancel, name='update_order_cancel'),
+
+   path('robots.txt', views.robots_txt, name='robots_txt'),
    
 
 

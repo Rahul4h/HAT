@@ -1777,6 +1777,25 @@ def mark_return_collected(request, return_id):
     return redirect('deliveryboy_home')
 
 
+from django.http import HttpResponse
+
+def robots_txt(request):
+    content = (
+        "User-agent: *\n"
+        "Disallow: /admin/\n"
+        "Disallow: /login\n"
+        "Disallow: /signup\n"
+        "Disallow: /logout/\n"
+        "Disallow: /cart/\n"
+        "Disallow: /checkout/\n"
+        "Disallow: /deliveryboy/\n"
+        "Disallow: /my-orders/\n"
+        "Allow: /\n\n"
+        f"Sitemap: {request.scheme}://{request.get_host()}/sitemap.xml\n"
+    )
+    return HttpResponse(content, content_type="text/plain")
+
+
 
 
 
