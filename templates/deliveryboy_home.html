@@ -394,48 +394,170 @@ Save Changes
 </div>
 </div>
 
- <!-- My Assigned Deliveries Section -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-header bg-success text-white">
-      <strong>My Assigned Deliveries</strong>
-    </div>
-    <div class="card-body">
-      {% if my_deliveries %}
-        {% for order in my_deliveries %}
-          {% if not order.confirmed_by_customer %}
-            <div class="border-bottom pb-3 mb-3">
-              <p><strong>Order #
-                {% if order.order %}
-                  {{ order.order.id }}
-                {% else %}
-                  {{ order.id }}
-                {% endif %}
-              </strong> | {{ order.user.username }} | ৳{{ order.total }}</p>
+ 
+  <!-- My Assigned Deliveries Section -->
+<div class="card shadow-sm mb-4">
 
-              <p><strong>Address:</strong> {{ order.address }}</p>
+<div class="card-header bg-success text-white">
+    <strong>My Assigned Deliveries</strong>
+</div>
 
-              {% if order.order_image %}
-                <img src="{{ order.order_image.url }}" alt="Order Image" class="img-thumbnail" width="150">
-              {% endif %}
 
-              {% if not order.marked_delivered_by_boy %}
-                <form method="post" action="{% url 'mark_order_delivered' order.id %}">  <!-- order here is DeliveryOrder -->
+<div class="card-body">
 
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-outline-success mt-2">Mark as Delivered</button>
-                </form>
-              {% else %}
-                <span class="badge bg-info mt-2">Waiting for customer confirmation</span>
-              {% endif %}
-            </div>
-          {% endif %}
-        {% endfor %}
-      {% else %}
-        <p>No active delivery tasks assigned to you.</p>
-      {% endif %}
-    </div>
-  </div>
+{% if my_deliveries %}
 
+{% for delivery in my_deliveries %}
+
+
+{% if not delivery.confirmed_by_customer %}
+
+<div class="border-bottom pb-3 mb-3">
+
+
+<p>
+<strong>
+Order #{{ delivery.order.id }}
+</strong>
+|
+{{ delivery.order.user.username }}
+|
+৳{{ delivery.order.total }}
+</p>
+
+
+
+<!-- Customer info -->
+
+<p>
+<strong>Phone:</strong>
+
+{{ delivery.order.shipping_address.phone }}
+
+</p>
+
+
+<p>
+<strong>Address:</strong>
+
+{{ delivery.order.address }}
+
+</p>
+
+
+
+<!-- Products -->
+
+<h6>Products:</h6>
+
+
+{% for item in delivery.order.items.all %}
+
+<div class="ms-3">
+
+
+<p>
+<strong>Name:</strong>
+{{ item.product.title }}
+</p>
+
+
+<p>
+<strong>Category:</strong>
+{{ item.product.category }}
+</p>
+
+
+<p>
+<strong>Quantity:</strong>
+{{ item.quantity }}
+piece
+</p>
+
+
+{% if item.product.image %}
+
+<img 
+src="{{ item.product.image.url }}"
+width="100"
+class="img-thumbnail">
+
+{% endif %}
+
+
+</div>
+
+
+{% endfor %}
+
+
+
+
+
+{% if delivery.order_image %}
+
+<img 
+src="{{ delivery.order_image.url }}"
+class="img-thumbnail"
+width="150">
+
+{% endif %}
+
+
+
+
+
+
+{% if not delivery.marked_delivered_by_boy %}
+
+
+<form method="post"
+action="{% url 'mark_order_delivered' delivery.id %}">
+
+{% csrf_token %}
+
+<button class="btn btn-outline-success mt-2">
+
+Mark as Delivered
+
+</button>
+
+</form>
+
+
+
+{% else %}
+
+<span class="badge bg-info">
+
+Waiting for customer confirmation
+
+</span>
+
+
+{% endif %}
+
+
+
+
+</div>
+
+{% endif %}
+
+
+{% endfor %}
+
+
+{% else %}
+
+<p>No active delivery tasks assigned to you.</p>
+
+{% endif %}
+
+
+</div>
+
+</div>
   <!-- My Assigned Returns Section -->
   <div class="card shadow-sm mb-4">
     <div class="card-header bg-warning text-dark">
