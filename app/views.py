@@ -1705,7 +1705,13 @@ def request_return(request, order_id):
         return redirect('order_list')
 
 from django.views.decorators.http import require_POST
-from .models import ReturnRequest
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+
+from .models import Order, ReturnRequest, DeliveryOrder
+
+
 @require_POST
 @login_required
 def create_return_request(request, order_id):
@@ -1719,7 +1725,21 @@ def create_return_request(request, order_id):
     reason = request.POST.get('reason')
     video = request.FILES.get('video')
 
-    delivery_order = order.delivery_info
+
+    if not reason or not video:
+        messages.error(
+            request,
+            "Reason and video are required."
+        )
+        return redirect('order_list')
+
+
+    # find delivery boy of this order
+    delivery_order = get_object_or_404(
+        DeliveryOrder,
+        order=order
+    )
+
 
     ReturnRequest.objects.create(
         order=order,
@@ -1728,10 +1748,11 @@ def create_return_request(request, order_id):
         reason=reason,
         video=video,
 
-        assigned_to=delivery_order.assigned_to,  # auto assign
+        assigned_to=delivery_order.assigned_to,
 
         status='assigned'
     )
+
 
     messages.success(
         request,
