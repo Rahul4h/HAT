@@ -254,10 +254,12 @@ class DeliveryOrder(models.Model):
 
 
 class ReturnRequest(models.Model):
-    order = models.ForeignKey(
+    order = models.OneToOneField(
         Order,
         on_delete=models.CASCADE,
-        db_index=True
+        db_index=True,
+        related_name='return_request'
+
     )
 
     customer = models.ForeignKey(
