@@ -82,7 +82,30 @@ class Profile(models.Model):
 
 class Product(models.Model):
     title = models.CharField(max_length=200)
-    category = models.CharField(max_length=100, default='Uncategorized', db_index=True)
+    CATEGORY_CHOICES = [
+    ('shirt', 'Shirt'),
+    ('t-shirt', 'T-shirt'),
+    ('saree', 'Saree'),
+    ('shoes', 'Shoes'),
+    ('jeans', 'Jeans'),
+    ('fans', 'Fans'),
+    ('toys', 'Toys'),
+    ('cake', 'Cake'),
+    ('dryfruits', 'Dryfruits'),
+    ('ear-phone', 'Ear-phone'),
+    ('laptop', 'Laptop'),
+    ('car', 'Car'),
+    ('frame', 'Frame'),
+   ]
+
+
+    category = models.CharField(
+       max_length=100,
+       choices=CATEGORY_CHOICES,
+       default='shirt',
+       db_index=True
+       )
+    
     image = models.ImageField(upload_to='products/')
     original_price = models.DecimalField(max_digits=10, decimal_places=2)
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)
