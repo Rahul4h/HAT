@@ -34,7 +34,7 @@ class ProductForm(forms.ModelForm):
         fields = ['title', 'category', 'image', 'original_price', 'sale_price', 'stock', 'piece']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'category': forms.TextInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-select'}),
             'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'original_price': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': '0.01'}),
             'sale_price': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': '0.01'}),

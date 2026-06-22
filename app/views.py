@@ -1278,6 +1278,7 @@ def deliveryboy_home(request):
         'my_returns': my_returns,
         'my_products': my_products,
         'my_blogs': my_blogs,
+        'category_choices': Product.CATEGORY_CHOICES,
     }
 
     return render(request, 'deliveryboy_home.html', context)
