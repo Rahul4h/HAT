@@ -17,10 +17,7 @@
                 <!-- ✅ Payment Method Selection -->
                 <h5>Select Payment Method</h5>
                 <div class="border p-3 rounded">
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="payment_method" id="stripe" value="stripe" required>
-                        <label class="form-check-label" for="stripe">💳 Pay with Stripe</label>
-                    </div>
+                    
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" required>
                         <label class="form-check-label" for="cod">Cash on Delivery</label>
@@ -49,7 +46,7 @@
             <!-- Order Summary -->
             <div class="col-md-6">
                 <h5>Order Summary</h5>
-                <div class="border p-3 rounded">
+                <div class="border p-3 rounded order-summary">
                     {% if product.image %}
                     <img src="{{ product.image.url }}" alt="{{ product.title }}" style="height: 100px;">
                     {% endif %}
@@ -119,4 +116,167 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
+<style>
+
+.checkout-title{
+    font-weight:700;
+}
+
+
+.border{
+    border-radius:15px !important;
+}
+
+
+/* Product image */
+
+.order-summary img{
+
+    max-width:100%;
+    height:auto;
+    object-fit:contain;
+    border-radius:10px;
+
+}
+
+
+
+/* Button */
+
+#proceedBtn{
+
+    width:100%;
+    padding:12px;
+    font-weight:600;
+
+}
+
+
+
+/* Quantity */
+
+#quantity{
+
+    max-width:200px;
+
+}
+
+
+
+
+
+@media(max-width:768px){
+
+
+    .container{
+
+        padding-left:12px;
+        padding-right:12px;
+
+    }
+
+
+
+    h3{
+
+        font-size:1.5rem;
+
+    }
+
+
+
+    h5{
+
+        font-size:1.05rem;
+
+    }
+
+
+
+    .row{
+
+        flex-direction:column;
+
+    }
+
+
+
+    .col-md-6{
+
+        width:100%;
+
+    }
+
+
+
+    .border{
+
+        padding:15px !important;
+
+    }
+
+
+
+    #quantity{
+
+        max-width:100%;
+        width:100%;
+
+    }
+
+
+
+    #proceedBtn{
+
+        margin-top:15px !important;
+
+    }
+
+
+    .order-summary img{
+
+        height:180px !important;
+        display:block;
+        margin:auto;
+
+    }
+
+
+
+}
+
+
+
+
+@media(max-width:400px){
+
+
+    h3{
+
+        font-size:1.3rem;
+
+    }
+
+
+
+    .form-check-label{
+
+        font-size:14px;
+
+    }
+
+
+
+    .border p{
+
+        font-size:14px;
+
+    }
+
+
+
+}
+
+</style>
 {% endblock %}
