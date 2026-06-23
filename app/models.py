@@ -111,6 +111,13 @@ class Product(models.Model):
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)
     stock = models.PositiveIntegerField(default=0, db_index=True)
     piece = models.IntegerField(default=0)
+
+    measurements = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+        help_text="Example: S,M,L,XL or 1 pound,1.5 pound"
+    )
     uploaded_by = models.ForeignKey(
         'DeliveryBoy',
         on_delete=models.SET_NULL,
@@ -129,6 +136,15 @@ class Product(models.Model):
             return f"HAT's Store #{shop_id}"
 
         return "HAT Official Store"
+    
+    @property
+    def measurement_list(self):
+        if self.measurements:
+            return [
+                x.strip() 
+                for x in self.measurements.split(',')
+            ]
+        return []
 
     def __str__(self):
         return self.title
@@ -194,6 +210,11 @@ class Order(models.Model):
     payment_method = models.CharField(max_length=20, db_index=True)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     is_cancelled = models.BooleanField(default=False, db_index=True)
+    measurement = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+      )
     # in Order model
     
     delivery_status = models.CharField(

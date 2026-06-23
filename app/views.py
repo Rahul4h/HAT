@@ -132,40 +132,7 @@ def contact(request):
             return redirect('/contact')
 
         # Case 2: User submitted contact form
-        fname = request.POST.get("name")
-        femail = request.POST.get("email")
-        phone = request.POST.get("phone")
-        desc = request.POST.get("desc")
-
-        query = Contact(name=fname, email=femail, phoneNumber=phone, description=desc)
-        query.save()
-
-        # Send email
-        from_email = settings.EMAIL_HOST_USER
-        connection = mail.get_connection()
-        connection.open()
-
-        email_message = mail.EmailMessage(
-            f'Email from {fname}',
-            f'UserEmail: {femail} \nUserPhoneNumber :{phone}\n\n\nQuery:{desc}',
-            from_email,
-            ['rahul17@cse.pstu.ac.bd'],
-            connection=connection
-        )
-
-        email_client = mail.EmailMessage(
-            'Admin Response',
-            'Thanks for reaching us\n\n  HAT',
-            from_email,
-            [femail],
-            connection=connection
-        )
-
-        connection.send_messages([email_message, email_client])
-        connection.close()
-
-        messages.info(request, "Thanks for contacting us, we will respond soon....")
-        return redirect('/contact')
+        
 
     return render(request, 'contact.html', {'chat_messages': chat_messages})
     
@@ -504,6 +471,7 @@ def checkout(request, product_id):
     if request.method == 'POST':
         form = ShippingAddressForm(request.POST)
         payment_method = request.POST.get('payment_method')
+        selected_measurement = request.POST.get('measurement')
 
         if form.is_valid() and payment_method in ['stripe', 'cod']:
             if available_quantity < quantity:
@@ -550,7 +518,8 @@ def checkout(request, product_id):
                     shipping_address=shipping,
                     address=shipping.address,
                     payment_method='cod',
-                    total=total
+                    total=total,
+                    measurement=selected_measurement
                 )
                 OrderItem.objects.create(order=order, product=product, quantity=quantity)
                 _create_delivery_order(order, product, shipping)
@@ -582,6 +551,7 @@ def checkout(request, product_id):
                 'message': "✅ Your order has been placed with Cash on Delivery!",
                 'order_id': order.id,
                 'order': order,
+                'selected_measurement': selected_measurement,
             })
         else:
          messages.error(request, "Please correct the checkout form and try again.")
@@ -597,6 +567,7 @@ def checkout(request, product_id):
         'total': total,
         'form': form,
         'available_quantity': available_quantity,
+        'selected_measurement': selected_measurement,
     }
     return render(request, 'checkout.html', context)
 

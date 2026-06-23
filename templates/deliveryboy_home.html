@@ -483,6 +483,13 @@ Order #{{ delivery.order.id }}
 piece
 </p>
 
+{% if delivery.order.measurement %}
+<p>
+<strong>Measurement:</strong>
+{{ delivery.order.measurement }}
+</p>
+{% endif %}
+
 
 {% if item.product.image %}
 
@@ -586,11 +593,60 @@ Waiting for customer confirmation
                         | {{ ret.customer.username }}
                         | ৳{{ ret.amount }}
                     </p>
+                     <p>
+    <strong>Customer Phone:</strong>
+    {{ ret.order.shipping_address.phone }}
+</p>
 
+<p>
+    <strong>Delivery Address:</strong>
+    {{ ret.order.address }}
+</p>
+<h6>Products:</h6>
+{% if ret.order.measurement %}
+<p>
+    <strong>Measurement:</strong>
+    {{ ret.order.measurement }}
+</p>
+{% endif %}
+
+
+
+{% for item in ret.order.items.all %}
+
+<p>
+    <strong>Name:</strong>
+    {{ item.product.title }}
+</p>
+
+<p>
+    <strong>Category:</strong>
+    {{ item.product.category }}
+</p>
+
+<p>
+    <strong>Price:</strong>
+    ৳{{ item.product.sale_price }}
+</p>
+
+<p>
+    <strong>Quantity:</strong>
+    {{ item.quantity }}
+</p>
+
+{% if item.product.image %}
+<img
+src="{{ item.product.image.url }}"
+width="100"
+class="img-thumbnail mb-2">
+{% endif %}
+
+{% endfor %}
                     <p>
                         <strong>Reason:</strong>
                         {{ ret.reason }}
                     </p>
+
 
                     {% if ret.video %}
                     <video width="250" controls>

@@ -95,20 +95,7 @@
         </div>
 
         <!-- 🔽 Complain Box -->
-        <div class="col-md-4">
-            <div class="complain-box">
-                <h3>Complain Box</h3>
-                <form action="/contact" method="post">
-                    {% csrf_token %}
-                    <input type="text" name="name" placeholder="Your Name" class="form-control mb-3" required>
-                    <input type="email" name="email" placeholder="Your Email" class="form-control mb-3" required>
-                    <input type="tel" name="phone" placeholder="Mobile Number" class="form-control mb-3" required>
-                    <label class="mb-2">What went wrong?</label>
-                    <textarea name="desc" class="form-control mb-3" rows="4" required></textarea>
-                    <button class="btn btn-dark w-100" type="submit">Submit Complain</button>
-                </form>
-            </div>
-        </div>
+        
 
         <!-- 🔽 Right Side Banner/Image -->
         <div class="col-md-4 d-none d-md-block">

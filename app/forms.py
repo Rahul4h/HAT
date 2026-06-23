@@ -31,7 +31,7 @@ class ShippingAddressForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['title', 'category', 'image', 'original_price', 'sale_price', 'stock', 'piece']
+        fields = ['title', 'category', 'image', 'original_price', 'sale_price', 'stock', 'piece','measurements',]
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
@@ -40,6 +40,12 @@ class ProductForm(forms.ModelForm):
             'sale_price': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': '0.01'}),
             'stock': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
             'piece': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
+            'measurements': forms.TextInput(
+                attrs={
+                    'class':'form-control',
+                    'placeholder':'Example: S,M,L,XL or 1 pound,1.5 pound'
+                }
+            ),
         }
 
     def __init__(self, *args, **kwargs):

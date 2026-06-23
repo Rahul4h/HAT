@@ -25,6 +25,37 @@
                 </div>
 
                 <input type="hidden" name="product_id" value="{{ product.id }}">
+                {% if product.measurement_list %}
+
+<label>
+Select Size / Measurement:
+</label>
+
+
+<select 
+name="measurement" 
+class="form-control mb-3"
+required>
+
+
+<option value="">
+Choose
+</option>
+
+
+{% for m in product.measurement_list %}
+
+<option value="{{m}}">
+{{m}}
+</option>
+
+{% endfor %}
+
+
+</select>
+
+
+{% endif %}
                 <label for="quantity"><strong>Quantity:</strong></label>
                 <input 
                  type="number" 
