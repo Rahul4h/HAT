@@ -3,6 +3,24 @@
 {% block title %}My Orders{% endblock %}
 
 {% block body %}
+
+{% block body %}
+
+<!-- Order Cancellation Notice -->
+<div class="order-notice-wrapper">
+    <div class="order-notice">
+        <span class="notice-icon">⚠️</span>
+        <div class="notice-text">
+            <span>
+                গুরুত্বপূর্ণ তথ্য: অর্ডার করার পর শুধুমাত্র ৩ ঘণ্টার মধ্যে অর্ডার বাতিল করা যাবে। 
+                ৩ ঘণ্টা পার হয়ে গেলে অর্ডার Cancel করার সুবিধা আর থাকবে না।
+            </span>
+        </div>
+    </div>
+</div>
+
+
+<div class="container my-5">
 <div class="container my-5">
     <h2 class="mb-4">🧾 My Orders</h2>
 
@@ -110,4 +128,68 @@
         <div class="alert alert-info">You have no orders yet.</div>
     {% endif %}
 </div>
+
+...
+{% if orders %}
+   ...
+{% endif %}
+
+</div>
+
+
+<style>
+
+.order-notice-wrapper{
+    width:100%;
+    overflow:hidden;
+    background:linear-gradient(90deg,#fff3cd,#ffe69c);
+    border-bottom:1px solid #f0c36d;
+    padding:10px 0;
+    margin-bottom:25px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+
+.order-notice{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    white-space:nowrap;
+    animation: runningNotice 18s linear infinite;
+}
+
+
+.notice-icon{
+    font-size:22px;
+}
+
+
+.notice-text{
+    font-size:15px;
+    font-weight:600;
+    color:#664d03;
+}
+
+
+@keyframes runningNotice{
+
+    0%{
+        transform:translateX(100%);
+    }
+
+    100%{
+        transform:translateX(-100%);
+    }
+
+}
+
+
+.order-notice-wrapper:hover .order-notice{
+    animation-play-state:paused;
+}
+
+</style>
+
+
+
 {% endblock %}
