@@ -1733,19 +1733,49 @@ from .models import ReturnRequest
 from django.contrib.auth.decorators import login_required
 
 @login_required
+@login_required
 def mark_return_collected(request, return_id):
     if request.method == 'POST':
+
         ret = get_object_or_404(ReturnRequest, id=return_id)
 
-        # Check: Only assigned delivery boy can mark as collected
         if ret.assigned_to and ret.assigned_to.user == request.user:
-            ret.status = 'collected'  # use 'collected' as the status
-            ret.collected_at = timezone.now()
-            ret.save()
-            messages.success(request, f"Return #{ret.id} marked as collected.")
+
+            with transaction.atomic():
+
+                # already collected হলে আবার add করবে না
+                if ret.status != 'collected':
+
+                    # return order এর সব product
+                    for item in ret.order.items.all():
+
+                        product = Product.objects.select_for_update().get(
+                            id=item.product.id
+                        )
+
+                        # ফেরত আসা quantity add
+                        product.piece += item.quantity
+                        
+
+                        product.save()
+
+
+                    ret.status = 'collected'
+                    ret.collected_at = timezone.now()
+                    ret.save()
+
+
+            messages.success(
+                request,
+                f"Return #{ret.id} collected and stock updated."
+            )
+
         else:
-            messages.error(request, "You are not authorized to mark this return.")
-    
+            messages.error(
+                request,
+                "You are not authorized to mark this return."
+            )
+
     return redirect('deliveryboy_home')
 
 

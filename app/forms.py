@@ -31,7 +31,7 @@ class ShippingAddressForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['title', 'category', 'image', 'original_price', 'sale_price', 'stock', 'piece','measurements',]
+        fields = ['title', 'category', 'image', 'original_price', 'sale_price', 'stock', 'piece','measurements']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
