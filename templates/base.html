@@ -70,39 +70,29 @@ body{
 
 .logo-img{
 
-    height:62px;
-
+    height:55px;
     width:auto;
 
     object-fit:contain;
 
     background:transparent;
 
-    padding:0;
-
-    border-radius:0;
+    transform:scale(1.25);
 
     filter:
-    drop-shadow(
-        0 5px 12px rgba(0,0,0,.45)
-    );
+    drop-shadow(0 5px 12px rgba(0,0,0,.35));
 
-    transition:.35s ease;
+    transition:.3s ease;
 
 }
 
 
-
 .navbar-brand:hover .logo-img{
 
-    transform:
-    scale(1.08)
-    translateY(-2px);
+    transform:scale(1.35);
 
     filter:
-    drop-shadow(
-    0 8px 18px rgba(255,255,255,.25)
-    );
+    drop-shadow(0 8px 18px rgba(255,255,255,.25));
 
 }
 
@@ -381,9 +371,11 @@ footer hr{
 
 .logo-img{
 
-    height:45px;
+        height:40px;
 
-}
+        transform:scale(1.2);
+
+    }
 
 
 
@@ -450,8 +442,31 @@ class="logo-img"> হাট
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item"><a class="nav-link active" href="/">SHOP</a></li>
             <li class="nav-item"><a class="nav-link active" href="/blog">BLOG</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/contact">HELP&CONTACT</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/about">ABOUT HAT</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/contact">HELP</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/about">ABOUT</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/my-orders">ORDERS</a></li>
+            <li class="nav-item"><a class="nav-link active" href="{% url 'cart' %}">🛒 </a></li>
+
+            <!-- Categories -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">CATEGORIES</a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'category_products' 'Saree' %}">Saree</a></li>
+                <li><a class="dropdown-item" href="{% url 'category_products' 'Shoes' %}">Shoes</a></li>
+                <li><a class="dropdown-item" href="{% url 'category_products' 'T-shirt' %}">T-shirt</a></li>
+                <li><a class="dropdown-item" href="{% url 'category_products' 'Shirt' %}">Shirt</a></li>
+                <li><a class="dropdown-item" href="{% url 'category_products' 'Jeans' %}">Jeans</a></li>
+                <li><a class="dropdown-item" href="{% url 'category_products' 'Fan' %}">Fan</a></li>
+                <li><a class="dropdown-item" href="{% url 'category_products' 'Toys' %}">Toys</a></li>
+                <li><a class="dropdown-item" href="{% url 'category_products' 'Cake' %}">Cake</a></li>
+                <li><a class="dropdown-item" href="{% url 'category_products' 'Dryfruits' %}">Dryfruits</a></li>
+                <li><a class="dropdown-item" href="{% url 'category_products' 'Earphone' %}">Ear-phone</a></li>
+                <li><a class="dropdown-item" href="{% url 'category_products' 'Laptop' %}">Laptop</a></li>
+                <li><a class="dropdown-item" href="{% url 'category_products' 'Car' %}">Car</a></li>
+                <li><a class="dropdown-item" href="{% url 'category_products' 'Frame' %}">Frame</a></li>
+                <li><a class="dropdown-item" href="{% url 'category_products' 'Phone' %}">Phone</a></li>
+              </ul>
+            </li>
 
             {% if not request.user.is_authenticated %}
             <!-- Customer auth links -->
@@ -479,31 +494,7 @@ class="logo-img"> হাট
                 <li><a class="dropdown-item" href="/logout">Logout</a></li>
               </ul>
             </li>
-            <li class="nav-item"><a class="nav-link active" href="{% url 'cart' %}">🛒 CART</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/my-orders">ORDERS</a></li>
-           
-
-
-            <!-- Categories -->
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">CATEGORIES</a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="{% url 'category_products' 'Saree' %}">Saree</a></li>
-                <li><a class="dropdown-item" href="{% url 'category_products' 'Shoes' %}">Shoes</a></li>
-                <li><a class="dropdown-item" href="{% url 'category_products' 'T-shirt' %}">T-shirt</a></li>
-                <li><a class="dropdown-item" href="{% url 'category_products' 'Shirt' %}">Shirt</a></li>
-                <li><a class="dropdown-item" href="{% url 'category_products' 'Jeans' %}">Jeans</a></li>
-                <li><a class="dropdown-item" href="{% url 'category_products' 'Fan' %}">Fan</a></li>
-                <li><a class="dropdown-item" href="{% url 'category_products' 'Toys' %}">Toys</a></li>
-                <li><a class="dropdown-item" href="{% url 'category_products' 'Cake' %}">Cake</a></li>
-                <li><a class="dropdown-item" href="{% url 'category_products' 'Dryfruits' %}">Dryfruits</a></li>
-                <li><a class="dropdown-item" href="{% url 'category_products' 'Earphone' %}">Ear-phone</a></li>
-                <li><a class="dropdown-item" href="{% url 'category_products' 'Laptop' %}">Laptop</a></li>
-                <li><a class="dropdown-item" href="{% url 'category_products' 'Car' %}">Car</a></li>
-                <li><a class="dropdown-item" href="{% url 'category_products' 'Frame' %}">Frame</a></li>
-                <li><a class="dropdown-item" href="{% url 'category_products' 'Phone' %}">Phone</a></li>
-              </ul>
-            </li>
+            
 
             <!-- Delivery boy logout link for delivery boy users -->
             {% if request.user.is_authenticated and request.user|hasrel:"deliveryboy" %}
