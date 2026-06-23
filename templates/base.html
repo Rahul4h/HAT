@@ -432,7 +432,7 @@ footer{
        <a class="navbar-brand" href="/">
  <img src="{% static 'images/logoe.png' %}" 
 alt="Hat Logo"
-class="logo-img"> হাট
+class="logo-img">হাট
 </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -440,13 +440,6 @@ class="logo-img"> হাট
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link active" href="/">SHOP</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/blog">BLOG</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/contact">HELP</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/about">ABOUT</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/my-orders">ORDERS</a></li>
-            <li class="nav-item"><a class="nav-link active" href="{% url 'cart' %}">🛒 </a></li>
-
             <!-- Categories -->
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">CATEGORIES</a>
@@ -467,6 +460,14 @@ class="logo-img"> হাট
                 <li><a class="dropdown-item" href="{% url 'category_products' 'Phone' %}">Phone</a></li>
               </ul>
             </li>
+            <li class="nav-item"><a class="nav-link active" href="/">SHOP</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/blog">BLOG</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/contact">HELP</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/about">ABOUT</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/my-orders">ORDERS</a></li>
+            <li class="nav-item"><a class="nav-link active" href="{% url 'cart' %}">🛒 </a></li>
+
+            
 
             {% if not request.user.is_authenticated %}
             <!-- Customer auth links -->
