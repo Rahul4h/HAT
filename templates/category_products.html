@@ -1,24 +1,361 @@
 {% extends 'base.html' %}
-{% block title %}{{ category_name }} Products{% endblock %}
-{% block body %}
-<div class="container py-5">
-    <h2 class="mb-4">{{ category_name }} Products</h2>
 
-    <div class="row">
-        {% for product in products %}
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.title }}</h5>
-                        <p class="card-text text-danger">৳{{ product.sale_price }}</p>
-                        <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">View</a>
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <p>No products found in this category.</p>
-        {% endfor %}
+{% block title %}{{ category_name }} Products{% endblock %}
+
+{% block body %}
+
+<div class="container py-4">
+
+```
+<!-- Page Header -->
+<div class="category-header mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">{{ category_name }}</h2>
+        <p class="text-muted mb-0">
+            Explore our latest collection
+        </p>
+    </div>
+
+    <div class="product-count">
+        {{ products|length }} Products
     </div>
 </div>
+
+
+{% if products %}
+
+<div class="row g-3">
+
+    {% for product in products %}
+
+    <div class="col-6 col-md-4 col-lg-3">
+
+        <a href="{% url 'product_detail' product.id %}"
+           class="product-link">
+
+            <div class="product-card">
+
+                <!-- Image Area -->
+                <div class="product-image-wrapper">
+
+                    {% if product.stock > 0 %}
+                    <span class="stock-badge in-stock">
+                        In Stock
+                    </span>
+                    {% else %}
+                    <span class="stock-badge out-stock">
+                        Out of Stock
+                    </span>
+                    {% endif %}
+
+                    {% if product.original_price > product.sale_price %}
+                    <span class="discount-badge">
+                        {% widthratio product.sale_price product.original_price 100 as sale_percent %}
+                        -{{ sale_percent|add:"-100"|cut:"-" }}%
+                    </span>
+                    {% endif %}
+
+                    <img src="{{ product.image.url }}"
+                         alt="{{ product.title }}"
+                         class="product-image">
+
+                </div>
+
+                <!-- Product Info -->
+                <div class="product-content">
+
+                    <div class="shop-name">
+                        {{ product.shop_name }}
+                    </div>
+
+                    <h6 class="product-title">
+                        {{ product.title }}
+                    </h6>
+
+                    <div class="price-section">
+
+                        <span class="sale-price">
+                            ৳{{ product.sale_price }}
+                        </span>
+
+                        {% if product.original_price > product.sale_price %}
+                        <span class="original-price">
+                            ৳{{ product.original_price }}
+                        </span>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="delivery-row">
+                        🚚 Delivery Available
+                    </div>
+
+                    <div class="view-btn">
+                        View Details
+                    </div>
+
+                </div>
+
+            </div>
+
+        </a>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+
+    <div class="empty-icon">
+        📦
+    </div>
+
+    <h4>No Products Found</h4>
+
+    <p class="text-muted">
+        No products are available in this category right now.
+    </p>
+
+</div>
+
+{% endif %}
+```
+
+</div>
+
+<style>
+
+.category-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+}
+
+.product-count{
+    background:#f8f9fa;
+    padding:8px 15px;
+    border-radius:30px;
+    font-size:14px;
+    font-weight:600;
+}
+
+.product-link{
+    text-decoration:none;
+    color:inherit;
+}
+
+.product-card{
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
+    height:100%;
+    border:1px solid #ececec;
+    transition:all .3s ease;
+    box-shadow:0 4px 12px rgba(0,0,0,.05);
+}
+
+.product-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 12px 28px rgba(0,0,0,.12);
+}
+
+.product-image-wrapper{
+    position:relative;
+    height:280px;
+    background:#f8f8f8;
+    overflow:hidden;
+}
+
+.product-image{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:.4s;
+}
+
+.product-card:hover .product-image{
+    transform:scale(1.05);
+}
+
+.stock-badge{
+    position:absolute;
+    top:10px;
+    left:10px;
+    z-index:2;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:600;
+}
+
+.in-stock{
+    background:#198754;
+    color:white;
+}
+
+.out-stock{
+    background:#dc3545;
+    color:white;
+}
+
+.discount-badge{
+    position:absolute;
+    top:10px;
+    right:10px;
+    z-index:2;
+    background:#ff3d00;
+    color:white;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:700;
+}
+
+.product-content{
+    padding:15px;
+}
+
+.shop-name{
+    color:#6c757d;
+    font-size:12px;
+    margin-bottom:8px;
+}
+
+.product-title{
+    font-size:15px;
+    font-weight:600;
+    line-height:1.4;
+    height:42px;
+    overflow:hidden;
+    margin-bottom:12px;
+}
+
+.price-section{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+.sale-price{
+    color:#e53935;
+    font-size:20px;
+    font-weight:700;
+}
+
+.original-price{
+    color:#999;
+    text-decoration:line-through;
+    font-size:13px;
+}
+
+.delivery-row{
+    margin-top:10px;
+    color:#666;
+    font-size:13px;
+}
+
+.view-btn{
+    margin-top:15px;
+    background:#111;
+    color:white;
+    text-align:center;
+    padding:10px;
+    border-radius:10px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.product-card:hover .view-btn{
+    background:#ff5722;
+}
+
+.empty-state{
+    text-align:center;
+    padding:80px 20px;
+}
+
+.empty-icon{
+    font-size:70px;
+    margin-bottom:20px;
+}
+
+
+/* Tablet */
+
+@media (max-width:991px){
+
+    .product-image-wrapper{
+        height:230px;
+    }
+
+}
+
+
+/* Mobile */
+
+@media (max-width:576px){
+
+    .container{
+        padding-left:10px;
+        padding-right:10px;
+    }
+
+    .category-header{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .product-card{
+        border-radius:12px;
+    }
+
+    .product-image-wrapper{
+        height:170px;
+    }
+
+    .product-content{
+        padding:10px;
+    }
+
+    .product-title{
+        font-size:13px;
+        height:38px;
+        margin-bottom:8px;
+    }
+
+    .sale-price{
+        font-size:16px;
+    }
+
+    .original-price{
+        font-size:11px;
+    }
+
+    .delivery-row{
+        font-size:11px;
+    }
+
+    .view-btn{
+        font-size:12px;
+        padding:8px;
+        margin-top:10px;
+    }
+
+    .stock-badge,
+    .discount-badge{
+        font-size:9px;
+        padding:4px 8px;
+    }
+
+}
+
+</style>
+
 {% endblock %}
