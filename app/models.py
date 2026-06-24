@@ -118,6 +118,12 @@ class Product(models.Model):
         null=True,
         help_text="Example: S,M,L,XL or 1 pound,1.5 pound"
     )
+
+    delivery_fee = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        default=30
+    )
     uploaded_by = models.ForeignKey(
         'DeliveryBoy',
         on_delete=models.SET_NULL,

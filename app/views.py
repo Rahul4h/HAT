@@ -464,7 +464,7 @@ def checkout(request, product_id):
     except (TypeError, ValueError):
         quantity = 1
     quantity = max(quantity, 1)
-    delivery_fee = 30
+    delivery_fee = product.delivery_fee
     subtotal = product.sale_price * quantity
     total = subtotal + delivery_fee
 

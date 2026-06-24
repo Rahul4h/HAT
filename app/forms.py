@@ -31,7 +31,7 @@ class ShippingAddressForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['title', 'category', 'image', 'original_price', 'sale_price', 'stock', 'piece','measurements']
+        fields = ['title', 'category', 'image', 'original_price', 'sale_price', 'stock', 'piece','measurements','delivery_fee']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
@@ -45,6 +45,13 @@ class ProductForm(forms.ModelForm):
                     'class':'form-control',
                     'placeholder':'Example: S,M,L,XL or vanila cake, chocolate cake etc.'
                 }
+            ),
+            'delivery_fee': forms.NumberInput(
+             attrs={
+              'class':'form-control',
+              'min':'0',
+              'step':'0.01'
+               }
             ),
         }
 
