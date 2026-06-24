@@ -43,7 +43,7 @@ class ProductForm(forms.ModelForm):
             'measurements': forms.TextInput(
                 attrs={
                     'class':'form-control',
-                    'placeholder':'Example: S,M,L,XL or 1 pound,1.5 pound'
+                    'placeholder':'Example: S,M,L,XL or vanila cake, chocolate cake etc.'
                 }
             ),
         }

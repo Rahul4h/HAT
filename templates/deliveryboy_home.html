@@ -8,7 +8,16 @@
     Welcome, {{ deliveryboy.user.username }}
 </h3>
 
+<div class="mb-4">
+    <h5 class="text-success">
+        আপনার দোকান তৈরি হয়েছে 🎉
+    </h5>
 
+    <p class="mb-0">
+        দোকান নং:
+        <strong>#{{ deliveryboy.id }}</strong>
+    </p>
+</div>
 <div class="d-flex justify-content-end mb-3">
 
 <a href="{% url 'deliveryboy_add_product' %}"
