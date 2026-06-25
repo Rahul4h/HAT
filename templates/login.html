@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load socialaccount %}
 
 {% block title %}Login{% endblock %}
 
@@ -24,9 +25,15 @@
           </div>
           {% endfor %}
 
-          <div class="alert alert-secondary" role="alert">
-            Google login is currently unavailable. Please log in with your username and password.
-          </div>
+          <a href="{% provider_login_url 'google' %}"
+   class="btn btn-danger w-100 mb-3">
+    <i class="fab fa-google me-2"></i>
+    Continue with Google
+</a>
+
+<div class="text-center mb-3">
+    <span class="text-muted">OR</span>
+</div>
 
           <!-- Username/Password Login -->
           <form action="/login" method="post">
