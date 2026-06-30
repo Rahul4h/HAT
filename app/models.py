@@ -35,6 +35,7 @@ class Blogs(models.Model):
         ('laptop', 'Laptop'),
         ('car', 'Car'),
         ('frame', 'Frame'),
+        ('ornament', 'Ornament'),
         # Add more as needed
     ]
 
@@ -96,6 +97,7 @@ class Product(models.Model):
     ('laptop', 'Laptop'),
     ('car', 'Car'),
     ('frame', 'Frame'),
+    ('ornament', 'Ornament'),
    ]
 
 
