@@ -435,7 +435,9 @@ footer hr{
 }
 
 
-
+.mobile-bottom-nav{
+    display:none;
+}
 
 
 /* ===============================
@@ -557,8 +559,110 @@ footer{
 
 }
 
+.d-flex.mt-2.mt-lg-0{
+
+    display:none;
 
 
+}
+
+.mobile-bottom-nav{
+
+        display:flex;
+
+        position:fixed;
+
+        left:0;
+
+        bottom:0;
+
+        width:100%;
+
+        height:68px;
+
+        background:#fff;
+
+        border-top:1px solid #e5e7eb;
+
+        box-shadow:0 -2px 12px rgba(0,0,0,.12);
+
+        justify-content:space-around;
+
+        align-items:center;
+
+        z-index:9999;
+
+    }
+
+    .mobile-bottom-nav a{
+
+        flex:1;
+
+        display:flex;
+
+        flex-direction:column;
+
+        justify-content:center;
+
+        align-items:center;
+
+        text-decoration:none;
+
+        color:#555;
+
+        font-size:11px;
+
+        font-weight:500;
+
+    }
+
+    .mobile-bottom-nav .icon{
+
+        font-size:24px;
+
+        margin-bottom:3px;
+
+    }
+
+    /* Cart Button */
+
+    .mobile-bottom-nav .cart-center{
+
+        transform:translateY(-16px);
+
+    }
+
+    .mobile-bottom-nav .cart-center .icon{
+
+        width:56px;
+
+        height:56px;
+
+        border-radius:50%;
+
+        background:#0d6efd;
+
+        color:#fff;
+
+        display:flex;
+
+        align-items:center;
+
+        justify-content:center;
+
+        font-size:30px;
+
+        box-shadow:0 8px 18px rgba(13,110,253,.35);
+
+    }
+
+    /* Footer যেন ঢেকে না যায় */
+
+    body{
+
+        padding-bottom:75px;
+
+    }
 
 }
 </style>
@@ -579,19 +683,19 @@ class="logo-img">হাট
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
            
            
-            <li class="nav-item"><a class="nav-link active" href="/">ITEMS</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/blog">BLOG</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/contact">HELP</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/about">ABOUT</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/my-orders">ORDERS</a></li>
-            <li class="nav-item"><a class="nav-link active" href="{% url 'cart' %}">🛒 </a></li>
+            <li class="nav-item mobile-hide"><a class="nav-link active" href="/">পণ্য</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/blog">ব্লগ</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/contact">সহায়তা</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/about">সম্পর্কে</a></li>
+            <li class="nav-item mobile-hide"><a class="nav-link active" href="/my-orders">অর্ডার</a></li>
+            <li class="nav-item mobile-hide"><a class="nav-link active" href="{% url 'cart' %}">🛒 </a></li>
 
             
 
             {% if not request.user.is_authenticated %}
             <!-- Customer auth links -->
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">New User?</a>
+              <a class="nav-link dropdown-toggle active " href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">অ্যাকাউন্ট?</a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="/login">Login</a></li>
                 <li><a class="dropdown-item" href="/signup">SignUp</a></li>
@@ -600,7 +704,7 @@ class="logo-img">হাট
 
             <!-- Delivery Boy auth links -->
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">SELLER?</a>
+              <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">বিক্রেতা?</a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{% url 'deliveryboy_login' %}">Login</a></li>
                 <li><a class="dropdown-item" href="{% url 'deliveryboy_signup' %}">SignUp</a></li>
@@ -609,7 +713,7 @@ class="logo-img">হাট
             {% else %}
             <!-- Logged in user links -->
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Welcome {{ request.user }}</a>
+              <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> {{ request.user }}</a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="/logout">Logout</a></li>
               </ul>
@@ -661,15 +765,15 @@ class="logo-img">হাট
 
 <div class="category-menu">
 
-<a href="{% url 'category_products' 'Shirt' %}">শার্ট</a>
+<a href="{% url 'category_products' 'shirt' %}">শার্ট</a>
 
-<a href="{% url 'category_products' 'T-shirt' %}">টি-শার্ট</a>
+<a href="{% url 'category_products' 't-shirt' %}">টি-শার্ট</a>
 
-<a href="{% url 'category_products' 'Jeans' %}">জিন্স</a>
+<a href="{% url 'category_products' 'jeans' %}">জিন্স</a>
 
-<a href="{% url 'category_products' 'Saree' %}">শাড়ি</a>
+<a href="{% url 'category_products' 'saree' %}">শাড়ি</a>
 
-<a href="{% url 'category_products' 'Shoes' %}">জুতা</a>
+<a href="{% url 'category_products' 'shoes' %}">জুতা</a>
 
 </div>
 
@@ -686,10 +790,10 @@ class="logo-img">হাট
 
 <div class="category-menu">
 
-<a href="{% url 'category_products' 'Frame' %}">
+<a href="{% url 'category_products' 'frame' %}">
 চশমার ফ্রেম
 </a>
-<a href="{% url 'category_products' 'Ornament' %}">গহনা</a>
+<a href="{% url 'category_products' 'ornament' %}">গহনা</a>
 
 </div>
 
@@ -705,19 +809,19 @@ class="logo-img">হাট
 
 <div class="category-menu">
 
-<a href="{% url 'category_products' 'Phone' %}">
+<a href="{% url 'category_products' 'phone' %}">
 মোবাইল ফোন
 </a>
 
-<a href="{% url 'category_products' 'Laptop' %}">
+<a href="{% url 'category_products' 'laptop' %}">
 ল্যাপটপ
 </a>
 
-<a href="{% url 'category_products' 'Earphone' %}">
+<a href="{% url 'category_products' 'ear-phone' %}">
 ইয়ারফোন
 </a>
 
-<a href="{% url 'category_products' 'Fan' %}">
+<a href="{% url 'category_products' 'fan' %}">
 ফ্যান
 </a>
 
@@ -735,11 +839,11 @@ class="logo-img">হাট
 
 <div class="category-menu">
 
-<a href="{% url 'category_products' 'Cake' %}">
+<a href="{% url 'category_products' 'cake' %}">
 কেক
 </a>
 
-<a href="{% url 'category_products' 'Dryfruits' %}">
+<a href="{% url 'category_products' 'dryfruits' %}">
 শুকনো ফল
 </a>
 
@@ -761,6 +865,18 @@ class="logo-img">হাট
     {% endfor %}
 
     {% block body %}{% endblock body %}
+
+    <div class="mobile-bottom-nav">
+
+<a href="/">🏪<span>পণ্য</span></a>
+
+<a href="/my-orders">📦<span>অর্ডার</span></a>
+
+<a href="{% url 'cart' %}" class="cart-btn">🛒</a>
+
+
+
+</div>
 
     <footer class="mt-5 bg-dark text-white pt-5 pb-3">
 

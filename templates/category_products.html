@@ -9,9 +9,12 @@
 ```
 <div class="category-header mb-4">
     <div>
-        <h2 class="fw-bold mb-1">{{ category_name }}</h2>
+        {% if products %}
+<h2 class="fw-bold mb-1">{{ products.0.get_category_display }}</h2>
+{% endif %}
+        
         <p class="text-muted mb-0">
-            Explore our latest collection
+            আমাদের নতুন কালেকশন দেখুন
         </p>
     </div>
 

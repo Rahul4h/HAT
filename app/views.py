@@ -719,10 +719,10 @@ def your_cancel_view(request):
     return HttpResponse("Payment Cancelled")
 
 def category_products(request, category_name):
-    products = Product.objects.filter(category__iexact=category_name)
+    products = Product.objects.filter(category=category_name)
     return render(request, 'category_products.html', {
-        'category_name': category_name,
-        'products': products
+        
+        'products': products,
     })
 
 
