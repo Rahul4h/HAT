@@ -22,22 +22,21 @@ from django.db import models
 class Blogs(models.Model):
     
     CATEGORY_CHOICES = [
-        ('shirt', 'Shirt'),
-        ('t-shirt', 'T-shirt'),
-        ('saree', 'Saree'),
-        ('shoes', 'Shoes'),
-        ('jeans', 'Jeans'),
-        ('fans', 'Fans'),
-        ('toys', 'Toys'),
-        ('cake', 'Cake'),
-        ('dryfruits', 'Dryfruits'),
-        ('ear-phone', 'Ear-phone'),
-        ('laptop', 'Laptop'),
-        ('car', 'Car'),
-        ('frame', 'Frame'),
-        ('ornament', 'Ornament'),
-        # Add more as needed
-    ]
+    ('shirt', 'শার্ট'),
+    ('t-shirt', 'টি-শার্ট'),
+    ('saree', 'শাড়ি'),
+    ('shoes', 'জুতা'),
+    ('jeans', 'জিন্স'),
+    ('fans', 'ফ্যান'),
+    ('toys', 'খেলনা'),
+    ('cake', 'কেক'),
+    ('dryfruits', 'শুকনো ফল'),
+    ('ear-phone', 'ইয়ারফোন'),
+    ('laptop', 'ল্যাপটপ'),
+    ('car', 'গাড়ি'),
+    ('frame', 'ফ্রেম'),
+    ('ornament', 'গহনা'),
+   ]
 
     title = models.CharField(max_length=100)
     description = models.TextField()
@@ -84,20 +83,20 @@ class Profile(models.Model):
 class Product(models.Model):
     title = models.CharField(max_length=200)
     CATEGORY_CHOICES = [
-    ('shirt', 'Shirt'),
-    ('t-shirt', 'T-shirt'),
-    ('saree', 'Saree'),
-    ('shoes', 'Shoes'),
-    ('jeans', 'Jeans'),
-    ('fans', 'Fans'),
-    ('toys', 'Toys'),
-    ('cake', 'Cake'),
-    ('dryfruits', 'Dryfruits'),
-    ('ear-phone', 'Ear-phone'),
-    ('laptop', 'Laptop'),
-    ('car', 'Car'),
-    ('frame', 'Frame'),
-    ('ornament', 'Ornament'),
+    ('shirt', 'শার্ট'),
+    ('t-shirt', 'টি-শার্ট'),
+    ('saree', 'শাড়ি'),
+    ('shoes', 'জুতা'),
+    ('jeans', 'জিন্স'),
+    ('fans', 'ফ্যান'),
+    ('toys', 'খেলনা'),
+    ('cake', 'কেক'),
+    ('dryfruits', 'শুকনো ফল'),
+    ('ear-phone', 'ইয়ারফোন'),
+    ('laptop', 'ল্যাপটপ'),
+    ('car', 'গাড়ি'),
+    ('frame', 'ফ্রেম'),
+    ('ornament', 'গহনা'),
    ]
 
 
