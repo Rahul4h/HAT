@@ -3,6 +3,65 @@
 {% block body %}
 <div class="container py-5">
     <div class="row">
+        <!-- Mobile Shop Card -->
+<div class="d-block d-md-none mb-4">
+
+{% if product.uploaded_by %}
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-body d-flex align-items-center">
+
+        <div class="me-3">
+
+            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                 style="width:55px;height:55px;font-size:22px;">
+
+                🏪
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <h6 class="mb-1">
+                SHOP NO : {{ product.uploaded_by.id }}
+            </h6>
+
+            <span class="badge bg-success">
+
+                Verified Seller
+
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% else %}
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-body">
+
+        <h6>🏪 HAT Official Store</h6>
+
+        <span class="badge bg-primary">
+
+            Official
+
+        </span>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+</div>
         <div class="col-md-6">
             <div class="product-image-box">
           <img src="{{ product.image.url }}"
@@ -15,6 +74,7 @@
  <h2>{{ product.title }}</h2>
 
 <!-- Seller / Shop Card -->
+ <div class="d-none d-md-block">
 {% if product.uploaded_by %}
 <div class="card shadow-sm border-0 mt-3 mb-4">
     <div class="card-body d-flex align-items-center">
@@ -56,7 +116,7 @@
 
 {% endif %}
 
-            
+         </div>   
 
             <p class="text-danger">
                 ৳{{ product.sale_price }} 
@@ -83,25 +143,34 @@
 
             {% if post %}
 
-              <div class="card mt-4 shadow-sm">
+<div class="marketing-banner">
 
-              
+    <div class="marketing-text">
 
+        <span class="marketing-icon">💡</span>
 
-             <div class="card-body">
+        <div>
 
-           <a href="{% url 'blog_detail' post.id %}"
-           class="btn btn-outline-primary">
+            <h6>Why customers love this product</h6>
 
-           Read Detail blog →
+            <p>
+                Discover the unique features, benefits and special offers before placing your order.
+            </p>
 
-            </a>
+        </div>
 
-            </div>
+    </div>
 
-            </div>
+    <a href="{% url 'blog_detail' post.id %}"
+       class="marketing-btn">
 
-           {% endif %}
+        Read Details →
+
+    </a>
+
+</div>
+
+{% endif %}
 
            
         </div>
@@ -256,7 +325,104 @@ form button {
 }
 
 
+.marketing-banner{
 
+    margin-top:22px;
+
+    padding:18px 22px;
+
+    border-radius:14px;
+
+    background:#f8fbff;
+
+    border:1px solid #d9eafc;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+    transition:.25s;
+
+}
+
+.marketing-banner:hover{
+
+    background:#f3f9ff;
+
+    box-shadow:0 8px 18px rgba(0,0,0,.05);
+
+}
+
+.marketing-text{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:15px;
+
+}
+
+.marketing-icon{
+
+    font-size:28px;
+
+    line-height:1;
+
+}
+
+.marketing-text h6{
+
+    margin:0;
+
+    font-size:18px;
+
+    font-weight:700;
+
+}
+
+.marketing-text p{
+
+    margin-top:5px;
+
+    margin-bottom:0;
+
+    color:#666;
+
+    font-size:14px;
+
+}
+
+.marketing-btn{
+
+    white-space:nowrap;
+
+    text-decoration:none;
+
+    font-weight:600;
+
+    color:#0d6efd;
+
+    border:2px solid #0d6efd;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    transition:.25s;
+
+}
+.marketing-btn:hover{
+
+    background:#0d6efd;
+
+    color:white;
+
+}
 
 
 @media(max-width:768px){
@@ -282,17 +448,21 @@ form button {
     .product-image-box{
 
         height:350px;
+        box-shadow:0 5px 18px rgba(0,0,0,.06);
+        margin-bottom:18px;
 
     }
 
 
 
+   
     h2{
 
-        text-align:center;
+text-align:left;
 
-    }
+margin-top:18px;
 
+}
 
 
     .card-body{
@@ -333,6 +503,32 @@ form button {
         margin-left:10px !important;
 
     }
+    .marketing-banner{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    padding:18px;
+
+}
+
+.marketing-text{
+
+    width:100%;
+
+}
+
+.marketing-btn{
+
+    width:100%;
+
+    text-align:center;
+
+}
+
+
+
 
 
 }
@@ -363,6 +559,29 @@ form button {
         font-size:11px;
 
     }
+    .marketing-text{
+
+    gap:12px;
+
+}
+
+.marketing-icon{
+
+    font-size:24px;
+
+}
+
+.marketing-text h6{
+
+    font-size:16px;
+
+}
+
+.marketing-text p{
+
+    font-size:13px;
+
+}
 
 
 }
